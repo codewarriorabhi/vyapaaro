@@ -1,23 +1,21 @@
-import { Home, Search, Heart, User, Store } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import logo from "@/assets/vyapaaro-logo.png";
 
 const DesktopHeader = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const links = [
-    { label: "Home", path: "/", icon: Home },
-    { label: "Explore Shops", path: "/shops", icon: Search },
-    { label: "Saved", path: "/saved", icon: Heart },
-    { label: "Profile", path: "/profile", icon: User },
+    { label: "Home", path: "/" },
+    { label: "Explore Shops", path: "/shops" },
+    { label: "Saved", path: "/saved" },
+    { label: "Profile", path: "/profile" },
   ];
 
   return (
     <header className="hidden md:flex items-center justify-between px-6 py-3 bg-card border-b border-border sticky top-0 z-50">
       <button onClick={() => navigate("/")} className="flex items-center gap-2">
-        <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center">
-          <Store className="h-5 w-5 text-primary-foreground" />
-        </div>
+        <img src={logo} alt="Vyapaaro" className="h-9 w-9 rounded-lg object-contain" />
         <span className="text-xl font-extrabold tracking-tight">Vyapaaro</span>
       </button>
       <nav className="flex items-center gap-1">
