@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Store } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import CategoryGrid from "@/components/CategoryGrid";
 import ShopCard from "@/components/ShopCard";
 import ProductCard from "@/components/ProductCard";
 import { shops, products } from "@/data/mockData";
+import logo from "@/assets/vyapaaro-logo.png";
 
 const Index = () => {
   const [search, setSearch] = useState("");
@@ -18,9 +18,7 @@ const Index = () => {
       {/* Mobile Header */}
       <div className="md:hidden gradient-primary px-4 pt-12 pb-6 rounded-b-3xl">
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-9 h-9 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
-            <Store className="h-5 w-5 text-primary-foreground" />
-          </div>
+          <img src={logo} alt="Vyapaaro" className="h-10 w-10 object-contain" />
           <h1 className="text-xl font-extrabold text-primary-foreground tracking-tight">Vyapaaro</h1>
         </div>
         <p className="text-primary-foreground/80 text-sm mb-4">Discover local shops near you</p>
