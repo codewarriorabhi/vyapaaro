@@ -15,7 +15,7 @@ const DesktopHeader = () => {
   return (
     <header className="hidden md:flex items-center justify-between px-6 py-3 bg-card border-b border-border sticky top-0 z-50">
       <button onClick={() => navigate("/")} className="flex items-center gap-2">
-        <img src={logo} alt="Vyapaaro" className="h-9 w-9 rounded-lg object-contain" />
+        <img src={logo} alt="Vyapaaro" className="h-12 w-12 rounded-xl object-contain" />
         <span className="text-xl font-extrabold tracking-tight">Vyapaaro</span>
       </button>
       <nav className="flex items-center gap-1">
