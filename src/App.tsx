@@ -12,6 +12,7 @@ import ProductDetail from "./pages/ProductDetail";
 import SavedPage from "./pages/SavedPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
+import SignupPage from "./pages/SignupPage";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/saved" element={<SavedPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <BottomNav />
