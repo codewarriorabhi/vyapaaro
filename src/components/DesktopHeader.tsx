@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import logo from "@/assets/vyapaaro-logo.png";
+import logo from "@/assets/vyapaaro-logo-new.png";
 
 const DesktopHeader = () => {
   const navigate = useNavigate();

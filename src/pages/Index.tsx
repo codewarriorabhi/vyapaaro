@@ -5,7 +5,7 @@ import CategoryGrid from "@/components/CategoryGrid";
 import ShopCard from "@/components/ShopCard";
 import ProductCard from "@/components/ProductCard";
 import { shops, products } from "@/data/mockData";
-import logo from "@/assets/vyapaaro-logo.png";
+import logo from "@/assets/vyapaaro-logo-new.png";
 
 const Index = () => {
   const [search, setSearch] = useState("");
