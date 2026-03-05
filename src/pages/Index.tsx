@@ -17,9 +17,9 @@ const Index = () => {
     <div className="pb-20 md:pb-8">
       {/* Mobile Header */}
       <div className="md:hidden gradient-primary px-4 pt-12 pb-6 rounded-b-3xl">
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex flex-col items-start mb-4">
           <img src={logo} alt="Vyapaaro" className="h-14 w-14 object-contain rounded-xl" />
-          <h1 className="text-xl font-extrabold text-primary-foreground tracking-tight">Vyapaaro</h1>
+          <h1 className="text-xl font-extrabold text-primary-foreground tracking-tight mt-1">Vyapaaro</h1>
         </div>
         <p className="text-primary-foreground/80 text-sm mb-4">Discover local shops near you</p>
         <SearchBar value={search} onChange={setSearch} />
