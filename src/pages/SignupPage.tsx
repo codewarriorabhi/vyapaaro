@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { User, Store, Mail, Phone, MapPin, CheckCircle, Loader2, ArrowLeft, ShieldCheck } from "lucide-react";
-import logo from "@/assets/vyapaaro-logo.png";
+import logo from "@/assets/vyapaaro-logo-new.png";
 
 const signupSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(50),
