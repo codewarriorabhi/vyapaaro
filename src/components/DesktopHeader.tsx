@@ -13,10 +13,10 @@ const DesktopHeader = () => {
   ];
 
   return (
-    <header className="hidden md:flex items-center justify-between px-6 py-3 bg-card border-b border-border sticky top-0 z-50">
+    <header className="hidden md:flex items-center justify-between px-6 py-3 gradient-primary border-b border-border sticky top-0 z-50">
       <button onClick={() => navigate("/")} className="flex flex-col items-center">
         <img src={logo} alt="Vyapaaro" className="h-14 w-14 rounded-xl object-contain" />
-        <span className="text-xs font-extrabold tracking-tight mt-0.5">Vyapaaro</span>
+        <span className="text-xs font-extrabold tracking-tight mt-0.5 text-primary-foreground">Vyapaaro</span>
       </button>
       <nav className="flex items-center gap-1">
         {links.map(({ label, path }) => {
@@ -26,7 +26,7 @@ const DesktopHeader = () => {
               key={path}
               onClick={() => navigate(path)}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                isActive ? "bg-white/20 text-primary-foreground" : "text-primary-foreground/70 hover:text-primary-foreground"
               }`}
             >
               {label}
