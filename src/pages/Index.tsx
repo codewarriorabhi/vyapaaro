@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import SearchBar from "@/components/SearchBar";
+import ThemeToggle from "@/components/ThemeToggle";
 import CategoryGrid from "@/components/CategoryGrid";
 import ShopCard from "@/components/ShopCard";
 import ProductCard from "@/components/ProductCard";

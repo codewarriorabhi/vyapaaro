@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "@/assets/vyapaaro-logo-new.png";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const DesktopHeader = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const DesktopHeader = () => {
             </button>
           );
         })}
+        <ThemeToggle className="text-primary-foreground/70 hover:text-primary-foreground hover:bg-white/10" />
       </nav>
     </header>
   );
