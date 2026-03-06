@@ -20,7 +20,9 @@ const Index = () => {
       {/* Mobile Header */}
       <div className="md:hidden gradient-primary px-4 pt-12 pb-6 rounded-b-3xl">
         <div className="flex flex-col items-center mb-4">
-          <img src={logo} alt="Vyapaaro" className="h-14 w-14 object-contain rounded-xl" />
+          <button onClick={() => window.location.href = "/"}>
+            <img src={logo} alt="Vyapaaro" className="h-14 w-14 object-contain rounded-xl" />
+          </button>
         </div>
         <p className="text-primary-foreground/80 text-sm mb-4">Discover local shops near you</p>
         <SearchBar value={search} onChange={setSearch} />
