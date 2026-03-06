@@ -4,6 +4,8 @@ import SearchBar from "@/components/SearchBar";
 import CategoryGrid from "@/components/CategoryGrid";
 import ShopCard from "@/components/ShopCard";
 import ProductCard from "@/components/ProductCard";
+import HeroBanner from "@/components/HeroBanner";
+import FlashDeals from "@/components/FlashDeals";
 import { shops, products } from "@/data/mockData";
 import logo from "@/assets/vyapaaro-logo-new.png";
 
@@ -34,8 +36,14 @@ const Index = () => {
       </div>
 
       <div className="px-4 mt-6 max-w-5xl mx-auto space-y-8">
+        {/* Hero Banner */}
+        <HeroBanner />
+
         {/* Categories */}
         <CategoryGrid />
+
+        {/* Flash Deals */}
+        <FlashDeals />
 
         {/* Nearby Shops */}
         <section>
