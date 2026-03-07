@@ -13,8 +13,27 @@ import logo from "@/assets/vyapaaro-logo-new.png";
 const Index = () => {
   const [search, setSearch] = useState("");
 
-  const nearbyShops = shops.filter((s) => s.isOpen);
-  const trendingProducts = products.slice(0, 4);
+  const query = search.toLowerCase().trim();
+
+  const nearbyShops = shops.filter((s) => {
+    if (!s.isOpen) return false;
+    if (!query) return true;
+    return (
+      s.name.toLowerCase().includes(query) ||
+      s.category.toLowerCase().includes(query) ||
+      s.tags.some((t) => t.toLowerCase().includes(query)) ||
+      s.address.toLowerCase().includes(query)
+    );
+  });
+
+  const trendingProducts = products.filter((p) => {
+    if (!query) return true;
+    return (
+      p.name.toLowerCase().includes(query) ||
+      p.category.toLowerCase().includes(query) ||
+      (p.description?.toLowerCase().includes(query) ?? false)
+    );
+  }).slice(0, 4);
 
   return (
     <div className="pb-20 md:pb-8">
