@@ -1,28 +1,23 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/hooks/use-toast";
-import { Eye, Mail, Phone, Star, MessageSquare } from "lucide-react";
+import { Eye, Mail, Phone, Star, MessageSquare, Loader2 } from "lucide-react";
+import { useUserSettings } from "@/hooks/useUserSettings";
 
 const privacyOptions = [
-  { key: "public_profile", label: "Public Profile Visibility", desc: "Allow others to see your profile", icon: Eye },
-  { key: "show_email", label: "Show Email Address", desc: "Display your email on your profile", icon: Mail },
-  { key: "show_phone", label: "Show Phone Number", desc: "Display your phone number on your profile", icon: Phone },
-  { key: "show_reviews", label: "Review Visibility", desc: "Make your reviews visible to others", icon: Star },
-  { key: "allow_contact", label: "Allow Shop Owners to Contact", desc: "Let shop owners reach out to you", icon: MessageSquare },
+  { key: "public_profile" as const, label: "Public Profile Visibility", desc: "Allow others to see your profile", icon: Eye },
+  { key: "show_email" as const, label: "Show Email Address", desc: "Display your email on your profile", icon: Mail },
+  { key: "show_phone" as const, label: "Show Phone Number", desc: "Display your phone number on your profile", icon: Phone },
+  { key: "show_reviews" as const, label: "Review Visibility", desc: "Make your reviews visible to others", icon: Star },
+  { key: "allow_contact" as const, label: "Allow Shop Owners to Contact", desc: "Let shop owners reach out to you", icon: MessageSquare },
 ];
 
 const PrivacySettings = () => {
-  const [settings, setSettings] = useState<Record<string, boolean>>({
-    public_profile: true,
-    show_email: false,
-    show_phone: false,
-    show_reviews: true,
-    allow_contact: true,
-  });
+  const { settings, loading, saving, saveSettings, updateLocal } = useUserSettings();
 
-  const toggle = (key: string) => setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
+  if (loading) {
+    return <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+  }
 
   return (
     <div className="space-y-8">
@@ -43,14 +38,22 @@ const PrivacySettings = () => {
                 <p className="text-xs text-muted-foreground">{desc}</p>
               </div>
             </div>
-            <Switch id={key} checked={settings[key]} onCheckedChange={() => toggle(key)} />
+            <Switch id={key} checked={settings[key]} onCheckedChange={(v) => updateLocal({ [key]: v })} />
           </div>
         ))}
       </div>
 
       <div className="flex gap-3 pt-2">
-        <Button onClick={() => toast({ title: "Privacy settings saved" })}>Save Changes</Button>
-        <Button variant="outline">Cancel</Button>
+        <Button onClick={() => saveSettings({
+          public_profile: settings.public_profile,
+          show_email: settings.show_email,
+          show_phone: settings.show_phone,
+          show_reviews: settings.show_reviews,
+          allow_contact: settings.allow_contact,
+        })} disabled={saving}>
+          {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</> : "Save Changes"}
+        </Button>
+        <Button variant="outline" disabled={saving}>Cancel</Button>
       </div>
     </div>
   );

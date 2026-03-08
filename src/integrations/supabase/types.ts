@@ -161,6 +161,81 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          allow_contact: boolean
+          auto_detect_location: boolean
+          created_at: string
+          email_notifs: boolean
+          id: string
+          language: string
+          location_radius: string
+          manual_location: string
+          new_shops_nearby: boolean
+          order_updates: boolean
+          promo_offers: boolean
+          public_profile: boolean
+          review_notifs: boolean
+          review_replies: boolean
+          review_visibility: boolean
+          show_email: boolean
+          show_phone: boolean
+          show_reviews: boolean
+          sms_notifs: boolean
+          theme: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allow_contact?: boolean
+          auto_detect_location?: boolean
+          created_at?: string
+          email_notifs?: boolean
+          id?: string
+          language?: string
+          location_radius?: string
+          manual_location?: string
+          new_shops_nearby?: boolean
+          order_updates?: boolean
+          promo_offers?: boolean
+          public_profile?: boolean
+          review_notifs?: boolean
+          review_replies?: boolean
+          review_visibility?: boolean
+          show_email?: boolean
+          show_phone?: boolean
+          show_reviews?: boolean
+          sms_notifs?: boolean
+          theme?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allow_contact?: boolean
+          auto_detect_location?: boolean
+          created_at?: string
+          email_notifs?: boolean
+          id?: string
+          language?: string
+          location_radius?: string
+          manual_location?: string
+          new_shops_nearby?: boolean
+          order_updates?: boolean
+          promo_offers?: boolean
+          public_profile?: boolean
+          review_notifs?: boolean
+          review_replies?: boolean
+          review_visibility?: boolean
+          show_email?: boolean
+          show_phone?: boolean
+          show_reviews?: boolean
+          sms_notifs?: boolean
+          theme?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
