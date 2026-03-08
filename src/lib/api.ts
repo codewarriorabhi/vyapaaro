@@ -106,6 +106,7 @@ class ApiService {
       body?: unknown;
       params?: Record<string, string | number | boolean>;
       headers?: HeadersInit;
+      silent?: boolean;
     }
   ): Promise<ApiResponse<T>> {
     const url = this.buildUrl(endpoint, options?.params);
@@ -122,19 +123,33 @@ class ApiService {
       config.body = JSON.stringify(options.body);
     }
 
-    try {
-      const response = await fetch(url, config);
-      return this.handleResponse<T>(response);
-    } catch (err) {
-      // Network errors or other fetch failures
-      const message = err instanceof Error ? err.message : "Network error occurred";
-      console.error("API request failed:", message);
-      return {
-        data: null,
-        error: message,
-        status: 0,
-      };
-    }
+    const executeRequest = async (): Promise<ApiResponse<T>> => {
+      try {
+        const response = await fetch(url, config);
+        const result = await this.handleResponse<T>(response);
+
+        if (result.error && !options?.silent) {
+          handleApiError(
+            result.status,
+            result.error,
+            () => { executeRequest(); }
+          );
+        }
+
+        return result;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Network error occurred";
+        console.error("API request failed:", message);
+
+        if (!options?.silent) {
+          handleApiError(0, message, () => { executeRequest(); });
+        }
+
+        return { data: null, error: message, status: 0 };
+      }
+    };
+
+    return executeRequest();
   }
 
   /**
