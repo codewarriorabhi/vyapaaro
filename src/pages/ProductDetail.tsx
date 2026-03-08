@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { useSavedItems } from "@/contexts/SavedItemsContext";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -14,13 +15,16 @@ const ProductDetail = () => {
   const product = products.find((p) => p.id === id);
   const shop = product ? shops.find((s) => s.id === product.shopId) : null;
   const [activeImage, setActiveImage] = useState(0);
-  const [isSaved, setIsSaved] = useState(false);
+  const { toggleSaveProduct, isProductSaved } = useSavedItems();
+
+  const isSaved = product ? isProductSaved(product.id) : false;
 
   const handleSave = () => {
-    setIsSaved(!isSaved);
+    if (!product) return;
+    toggleSaveProduct(product.id);
     toast({
       title: !isSaved ? "Saved!" : "Removed",
-      description: !isSaved ? `${product?.name} added to your saved items` : `${product?.name} removed from saved items`,
+      description: !isSaved ? `${product.name} added to your saved items` : `${product.name} removed from saved items`,
     });
   };
 
