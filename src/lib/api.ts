@@ -158,9 +158,10 @@ class ApiService {
   async get<T>(
     endpoint: string,
     params?: Record<string, string | number | boolean>,
-    headers?: HeadersInit
+    headers?: HeadersInit,
+    options?: { silent?: boolean }
   ): Promise<ApiResponse<T>> {
-    return this.request<T>("GET", endpoint, { params, headers });
+    return this.request<T>("GET", endpoint, { params, headers, silent: options?.silent });
   }
 
   /**
