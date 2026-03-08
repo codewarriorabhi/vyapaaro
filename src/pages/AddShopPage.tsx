@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import { categories } from "@/data/mockData";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -19,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import {
   ArrowLeft, Store, MapPin, Clock, Phone, MessageSquare,
-  Camera, X, Loader2, ImagePlus, Tag,
+  Camera, X, Loader2, ImagePlus, Tag, Navigation, CheckCircle,
 } from "lucide-react";
 import logo from "@/assets/vyapaaro-logo-new.png";
 
@@ -32,11 +34,16 @@ const AddShopPage = () => {
   const [authChecking, setAuthChecking] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
+  // Geolocation
+  const { latitude, longitude, loading: geoLoading, error: geoError, requestLocation, permission } = useGeolocation();
+
   // Form state
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
+  const [manualLat, setManualLat] = useState("");
+  const [manualLng, setManualLng] = useState("");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [workingHours, setWorkingHours] = useState("");
@@ -68,6 +75,13 @@ const AddShopPage = () => {
     };
     checkAccess();
   }, [navigate]);
+
+  // Auto-request location on mount if permission is granted
+  useEffect(() => {
+    if (permission === "granted") {
+      requestLocation();
+    }
+  }, [permission, requestLocation]);
 
   const handleAddTag = () => {
     const trimmed = tagInput.trim();
@@ -102,7 +116,7 @@ const AddShopPage = () => {
     setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const uploadPhotos = async (shopId: string): Promise<string[]> => {
+  const uploadPhotosToStorage = async (shopId: string): Promise<string[]> => {
     const urls: string[] = [];
     for (const file of photoFiles) {
       const ext = file.name.split(".").pop();
@@ -126,10 +140,40 @@ const AddShopPage = () => {
     }
     if (!userId) return;
 
+    // Get coordinates - prefer browser geolocation, fallback to manual
+    const lat = latitude || (manualLat ? parseFloat(manualLat) : null);
+    const lng = longitude || (manualLng ? parseFloat(manualLng) : null);
+
+    if (!lat || !lng) {
+      toast({ title: "Location required", description: "Please enable location or enter coordinates manually.", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
     try {
-      // First insert shop to get ID
-      const { data: shop, error: insertError } = await supabase
+      // Send to backend API
+      const response = await api.post<{ id?: string; shopId?: string; shop?: { id: string }; message?: string }>("/shops/create", {
+        shopName: name.trim(),
+        category,
+        address: address.trim(),
+        latitude: lat,
+        longitude: lng,
+        description: description.trim(),
+        phone: phone.trim(),
+        whatsapp: whatsapp.trim(),
+        workingHours: workingHours.trim(),
+        tags,
+      });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      // Get shop ID from response
+      const shopId = response.data?.id || response.data?.shopId || response.data?.shop?.id;
+
+      // Also save to Supabase for local data management
+      const { data: supabaseShop, error: supabaseError } = await supabase
         .from("shops")
         .insert({
           owner_id: userId,
@@ -147,18 +191,19 @@ const AddShopPage = () => {
         .select("id")
         .single();
 
-      if (insertError) throw insertError;
-
-      // Upload photos and update
-      if (photoFiles.length > 0 && shop) {
-        const photoUrls = await uploadPhotos(shop.id);
-        await supabase
-          .from("shops")
-          .update({ photos: photoUrls, cover_image: photoUrls[0] || "" })
-          .eq("id", shop.id);
+      // Upload photos if we have a shop ID
+      const finalShopId = shopId || supabaseShop?.id;
+      if (photoFiles.length > 0 && finalShopId) {
+        const photoUrls = await uploadPhotosToStorage(finalShopId);
+        if (supabaseShop) {
+          await supabase
+            .from("shops")
+            .update({ photos: photoUrls, cover_image: photoUrls[0] || "" })
+            .eq("id", supabaseShop.id);
+        }
       }
 
-      toast({ title: "Shop Created! 🎉", description: "Your shop has been registered successfully." });
+      toast({ title: "Shop Created! 🎉", description: "Your shop profile has been registered successfully." });
       navigate("/my-shops");
     } catch (err: any) {
       toast({ title: "Error", description: err.message || "Failed to create shop.", variant: "destructive" });
@@ -257,6 +302,72 @@ const AddShopPage = () => {
                     maxLength={300}
                     rows={2}
                   />
+                </div>
+
+                {/* Location */}
+                <div className="space-y-3">
+                  <Label className="text-sm flex items-center gap-1.5">
+                    <Navigation className="h-3.5 w-3.5 text-muted-foreground" /> Shop Location *
+                  </Label>
+                  
+                  {/* Geolocation button */}
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant={latitude && longitude ? "outline" : "default"}
+                      size="sm"
+                      onClick={requestLocation}
+                      disabled={geoLoading}
+                      className="gap-2"
+                    >
+                      {geoLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : latitude && longitude ? (
+                        <CheckCircle className="h-4 w-4 text-accent" />
+                      ) : (
+                        <Navigation className="h-4 w-4" />
+                      )}
+                      {latitude && longitude ? "Location Set" : "Use My Location"}
+                    </Button>
+                    
+                    {latitude && longitude && (
+                      <span className="text-xs text-muted-foreground">
+                        {latitude.toFixed(4)}, {longitude.toFixed(4)}
+                      </span>
+                    )}
+                  </div>
+
+                  {geoError && (
+                    <p className="text-xs text-destructive">{geoError}</p>
+                  )}
+
+                  {/* Manual coordinates fallback */}
+                  {!latitude && !longitude && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label htmlFor="manual-lat" className="text-xs text-muted-foreground">Latitude</Label>
+                        <Input
+                          id="manual-lat"
+                          type="number"
+                          step="any"
+                          placeholder="e.g. 28.6139"
+                          value={manualLat}
+                          onChange={(e) => setManualLat(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="manual-lng" className="text-xs text-muted-foreground">Longitude</Label>
+                        <Input
+                          id="manual-lng"
+                          type="number"
+                          step="any"
+                          placeholder="e.g. 77.2090"
+                          value={manualLng}
+                          onChange={(e) => setManualLng(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Phone & WhatsApp */}
@@ -383,7 +494,7 @@ const AddShopPage = () => {
                 {/* Submit */}
                 <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={loading}>
                   {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                  Register Shop
+                  Create Shop Profile
                 </Button>
               </form>
             </CardContent>
