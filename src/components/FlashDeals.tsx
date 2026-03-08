@@ -19,7 +19,11 @@ const formatTime = (ms: number) => {
   return { h, m, s };
 };
 
-const FlashDeals = () => {
+interface FlashDealsProps {
+  searchQuery?: string;
+}
+
+const FlashDeals = ({ searchQuery = "" }: FlashDealsProps) => {
   const [remaining, setRemaining] = useState(getEndOfDay());
 
   useEffect(() => {
@@ -29,8 +33,16 @@ const FlashDeals = () => {
 
   const { h, m, s } = formatTime(remaining);
 
-  // Products with discounts
-  const dealProducts = products.filter((p) => p.originalPrice && p.originalPrice > p.price);
+  const query = searchQuery.toLowerCase().trim();
+  const dealProducts = products.filter((p) => {
+    if (!p.originalPrice || p.originalPrice <= p.price) return false;
+    if (!query) return true;
+    return (
+      p.name.toLowerCase().includes(query) ||
+      p.category.toLowerCase().includes(query) ||
+      (p.description?.toLowerCase().includes(query) ?? false)
+    );
+  });
 
   if (dealProducts.length === 0) return null;
 
