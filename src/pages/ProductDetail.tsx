@@ -14,6 +14,15 @@ const ProductDetail = () => {
   const product = products.find((p) => p.id === id);
   const shop = product ? shops.find((s) => s.id === product.shopId) : null;
   const [activeImage, setActiveImage] = useState(0);
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSave = () => {
+    setIsSaved(!isSaved);
+    toast({
+      title: !isSaved ? "Saved!" : "Removed",
+      description: !isSaved ? `${product?.name} added to your saved items` : `${product?.name} removed from saved items`,
+    });
+  };
 
   if (!product) {
     return (
