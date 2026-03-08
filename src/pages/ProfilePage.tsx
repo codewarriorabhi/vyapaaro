@@ -119,7 +119,6 @@ const ProfilePage = () => {
             {profile ? `${profile.first_name?.[0] || ""}${profile.surname?.[0] || ""}`.toUpperCase() || <User className="h-7 w-7" /> : <User className="h-7 w-7" />}
           </AvatarFallback>
         </Avatar>
-        </div>
         <div className="flex-1 min-w-0">
           {isLoggedIn ? (
             <>
