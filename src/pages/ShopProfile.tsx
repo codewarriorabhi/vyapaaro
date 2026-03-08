@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Star, MapPin, Clock, Phone, MessageCircle, Heart, Navigation, Share2 } from "lucide-react";
 import { shops, products, reviews } from "@/data/mockData";
@@ -6,6 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { trackShopEvent } from "@/hooks/useShopTracking";
 
 const ShopProfile = () => {
   const { id } = useParams();
