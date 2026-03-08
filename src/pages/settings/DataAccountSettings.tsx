@@ -18,7 +18,7 @@ import { Download, PauseCircle, Trash2, FileText, Shield, HelpCircle, Loader2 } 
 
 const DataAccountSettings = () => {
   const navigate = useNavigate();
-  const [deleting, setDeleting] = useState(false);
+  const [deleting] = useState(false);
 
   const linkItems = [
     { icon: FileText, label: "Terms of Service", desc: "View our terms", action: () => toast({ title: "Coming soon" }) },
