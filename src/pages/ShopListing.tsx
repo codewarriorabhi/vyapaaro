@@ -1,17 +1,40 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, SlidersHorizontal, LayoutGrid, List } from "lucide-react";
+import { Search, SlidersHorizontal, LayoutGrid, List, Loader2, Store } from "lucide-react";
 import ShopCard from "@/components/ShopCard";
 import ShopFilterSidebar, { type ShopFilters } from "@/components/ShopFilterSidebar";
-import { shops, categories } from "@/data/mockData";
+import { categories } from "@/data/mockData";
+import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+interface ApiShop {
+  id: string;
+  name: string;
+  category: string;
+  image?: string;
+  rating?: number;
+  reviewCount?: number;
+  distance?: string;
+  address: string;
+  isOpen?: boolean;
+  tags?: string[];
+  phone?: string;
+  whatsapp?: string;
+  workingHours?: string;
+  description?: string;
+  priceLevel?: 1 | 2 | 3;
+}
+
 const ShopListing = () => {
   const [searchParams] = useSearchParams();
   const categoryFilter = searchParams.get("category");
+
+  const [shops, setShops] = useState<ApiShop[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"rating" | "distance" | "popular">("rating");
@@ -26,6 +49,36 @@ const ShopListing = () => {
     priceLevel: null,
   });
 
+  // Fetch shops from API on mount
+  useEffect(() => {
+    const fetchShops = async () => {
+      setLoading(true);
+      setError(null);
+      
+      const response = await api.get<ApiShop[] | { shops: ApiShop[]; data: ApiShop[] }>("/shops");
+      
+      if (response.error) {
+        setError(response.error);
+        setShops([]);
+      } else if (response.data) {
+        // Handle different response formats
+        let shopData: ApiShop[] = [];
+        if (Array.isArray(response.data)) {
+          shopData = response.data;
+        } else if (Array.isArray((response.data as any).shops)) {
+          shopData = (response.data as any).shops;
+        } else if (Array.isArray((response.data as any).data)) {
+          shopData = (response.data as any).data;
+        }
+        setShops(shopData);
+      }
+      
+      setLoading(false);
+    };
+
+    fetchShops();
+  }, []);
+
   const filtered = useMemo(() => {
     let result = [...shops];
 
@@ -36,7 +89,7 @@ const ShopListing = () => {
         (s) =>
           s.name.toLowerCase().includes(q) ||
           s.category.toLowerCase().includes(q) ||
-          s.tags.some((t) => t.toLowerCase().includes(q)) ||
+          (s.tags || []).some((t) => t.toLowerCase().includes(q)) ||
           s.address.toLowerCase().includes(q)
       );
     }
@@ -49,12 +102,12 @@ const ShopListing = () => {
     // Distance
     if (filters.distance) {
       const maxDist = parseFloat(filters.distance);
-      result = result.filter((s) => parseFloat(s.distance) <= maxDist);
+      result = result.filter((s) => parseFloat(s.distance || "999") <= maxDist);
     }
 
     // Rating
     if (filters.rating && filters.rating > 0) {
-      result = result.filter((s) => s.rating >= filters.rating!);
+      result = result.filter((s) => (s.rating || 0) >= filters.rating!);
     }
 
     // Status
@@ -68,13 +121,13 @@ const ShopListing = () => {
 
     // Sort
     result.sort((a, b) => {
-      if (sortBy === "rating") return b.rating - a.rating;
-      if (sortBy === "popular") return b.reviewCount - a.reviewCount;
-      return parseFloat(a.distance) - parseFloat(b.distance);
+      if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
+      if (sortBy === "popular") return (b.reviewCount || 0) - (a.reviewCount || 0);
+      return parseFloat(a.distance || "999") - parseFloat(b.distance || "999");
     });
 
     return result;
-  }, [search, filters, sortBy]);
+  }, [shops, search, filters, sortBy]);
 
   const activeFilterCount =
     filters.categories.length +
@@ -93,7 +146,7 @@ const ShopListing = () => {
               Explore Shops
             </h1>
             <p className="text-sm text-primary-foreground/80 mb-4">
-              Discover {shops.length}+ local shops near you
+              {loading ? "Loading shops..." : `Discover ${shops.length}+ local shops near you`}
             </p>
           </motion.div>
           <div className="relative max-w-2xl">
@@ -253,30 +306,91 @@ const ShopListing = () => {
               </div>
             )}
 
-            {/* Shop list */}
-            {filtered.length === 0 ? (
+            {/* Loading state */}
+            {loading && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col items-center justify-center py-16"
+              >
+                <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                <p className="text-sm text-muted-foreground">Loading shops...</p>
+              </motion.div>
+            )}
+
+            {/* Error state */}
+            {!loading && error && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-center py-16"
               >
+                <p className="text-lg font-bold text-destructive mb-1">Failed to load shops</p>
+                <p className="text-sm text-muted-foreground mb-4">{error}</p>
+                <Button variant="outline" onClick={() => window.location.reload()}>
+                  Try Again
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Empty state */}
+            {!loading && !error && filtered.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-16"
+              >
+                <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <Store className="h-8 w-8 text-muted-foreground" />
+                </div>
                 <p className="text-lg font-bold mb-1">No shops found</p>
                 <p className="text-sm text-muted-foreground">
-                  Try adjusting your filters or search query
+                  {shops.length === 0
+                    ? "No shops are available at the moment"
+                    : "Try adjusting your filters or search query"}
                 </p>
               </motion.div>
-            ) : viewMode === "grid" ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {filtered.map((shop, i) => (
-                  <ShopCard key={shop.id} shop={shop} index={i} />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {filtered.map((shop, i) => (
-                  <ShopCard key={shop.id} shop={shop} index={i} />
-                ))}
-              </div>
+            )}
+
+            {/* Shop list */}
+            {!loading && !error && filtered.length > 0 && (
+              viewMode === "grid" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {filtered.map((shop, i) => (
+                    <ShopCard 
+                      key={shop.id} 
+                      shop={{
+                        ...shop,
+                        image: shop.image || "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=400&h=300&fit=crop",
+                        rating: shop.rating || 0,
+                        reviewCount: shop.reviewCount || 0,
+                        distance: shop.distance || "N/A",
+                        isOpen: shop.isOpen ?? true,
+                        tags: shop.tags || [],
+                      }} 
+                      index={i} 
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {filtered.map((shop, i) => (
+                    <ShopCard 
+                      key={shop.id} 
+                      shop={{
+                        ...shop,
+                        image: shop.image || "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=400&h=300&fit=crop",
+                        rating: shop.rating || 0,
+                        reviewCount: shop.reviewCount || 0,
+                        distance: shop.distance || "N/A",
+                        isOpen: shop.isOpen ?? true,
+                        tags: shop.tags || [],
+                      }} 
+                      index={i} 
+                    />
+                  ))}
+                </div>
+              )
             )}
           </div>
         </div>
