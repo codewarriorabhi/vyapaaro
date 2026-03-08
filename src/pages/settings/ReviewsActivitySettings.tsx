@@ -2,12 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { useState } from "react";
-import { Pencil, Trash2, Eye, Bell } from "lucide-react";
+import { Pencil, Trash2, Eye, Bell, Loader2 } from "lucide-react";
+import { useUserSettings } from "@/hooks/useUserSettings";
 
 const ReviewsActivitySettings = () => {
-  const [reviewNotifs, setReviewNotifs] = useState(true);
-  const [reviewVisibility, setReviewVisibility] = useState(true);
+  const { settings, loading, saving, saveSettings, updateLocal } = useUserSettings();
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+  }
 
   return (
     <div className="space-y-8">
@@ -16,7 +19,6 @@ const ReviewsActivitySettings = () => {
         <p className="text-sm text-muted-foreground mt-1">Manage your reviews and activity preferences</p>
       </div>
 
-      {/* Quick Actions */}
       <div className="space-y-1">
         <button
           onClick={() => toast({ title: "Coming soon", description: "Review editing will be available soon." })}
@@ -45,7 +47,6 @@ const ReviewsActivitySettings = () => {
         </button>
       </div>
 
-      {/* Toggles */}
       <div className="space-y-1">
         <div className="flex items-center justify-between p-4 rounded-xl hover:bg-muted/50 transition-colors">
           <div className="flex items-center gap-3">
@@ -57,7 +58,7 @@ const ReviewsActivitySettings = () => {
               <p className="text-xs text-muted-foreground">Make your reviews visible to others</p>
             </div>
           </div>
-          <Switch id="review_visibility" checked={reviewVisibility} onCheckedChange={setReviewVisibility} />
+          <Switch id="review_visibility" checked={settings.review_visibility} onCheckedChange={(v) => updateLocal({ review_visibility: v })} />
         </div>
 
         <div className="flex items-center justify-between p-4 rounded-xl hover:bg-muted/50 transition-colors">
@@ -70,13 +71,18 @@ const ReviewsActivitySettings = () => {
               <p className="text-xs text-muted-foreground">Get notified about review activity</p>
             </div>
           </div>
-          <Switch id="review_notifs" checked={reviewNotifs} onCheckedChange={setReviewNotifs} />
+          <Switch id="review_notifs" checked={settings.review_notifs} onCheckedChange={(v) => updateLocal({ review_notifs: v })} />
         </div>
       </div>
 
       <div className="flex gap-3 pt-2">
-        <Button onClick={() => toast({ title: "Settings saved" })}>Save Changes</Button>
-        <Button variant="outline">Cancel</Button>
+        <Button onClick={() => saveSettings({
+          review_visibility: settings.review_visibility,
+          review_notifs: settings.review_notifs,
+        })} disabled={saving}>
+          {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</> : "Save Changes"}
+        </Button>
+        <Button variant="outline" disabled={saving}>Cancel</Button>
       </div>
     </div>
   );
