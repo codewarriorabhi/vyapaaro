@@ -126,6 +126,14 @@ const ProfilePage = () => {
             </>
           )}
         </div>
+        {isLoggedIn && (
+          <button
+            onClick={() => setEditOpen(true)}
+            className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 hover:bg-primary/20 transition-colors"
+          >
+            <Pencil className="h-4 w-4 text-primary" />
+          </button>
+        )}
       </motion.div>
 
       {/* User details card when logged in */}
