@@ -81,16 +81,16 @@ const ProfilePage = () => {
     ? [
         { icon: ShoppingBag, label: "My Orders", desc: "View your order history", path: "/orders" },
         { icon: Store, label: "My Shops", desc: "Manage your shop listings", path: "/my-shops" },
-        { icon: Bell, label: "Notifications", desc: "Offers & announcements" },
-        { icon: Settings, label: "Settings", desc: "App preferences" },
+        { icon: Bell, label: "Notifications", desc: "Offers & announcements", path: "/settings" },
+        { icon: Settings, label: "Settings", desc: "App preferences", path: "/settings" },
         { icon: HelpCircle, label: "Help & Support", desc: "Get assistance" },
         { icon: Shield, label: "Privacy Policy", desc: "Your data protection" },
       ]
     : [
         { icon: LogIn, label: "Login / Sign Up", desc: "Access your account", path: "/login" },
         { icon: Store, label: "My Shops", desc: "Manage your shop listings", path: "/login" },
-        { icon: Bell, label: "Notifications", desc: "Offers & announcements" },
-        { icon: Settings, label: "Settings", desc: "App preferences" },
+        { icon: Bell, label: "Notifications", desc: "Offers & announcements", path: "/settings" },
+        { icon: Settings, label: "Settings", desc: "App preferences", path: "/settings" },
         { icon: HelpCircle, label: "Help & Support", desc: "Get assistance" },
         { icon: Shield, label: "Privacy Policy", desc: "Your data protection" },
       ];
