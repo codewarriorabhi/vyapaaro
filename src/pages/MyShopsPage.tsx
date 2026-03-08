@@ -89,9 +89,7 @@ const MyShopsPage = () => {
             </motion.div>
             <Button
               className="gradient-primary border border-primary-foreground/20 text-primary-foreground hover:bg-primary/80 gap-1.5 shadow-lg"
-              onClick={() =>
-                toast({ title: "Coming Soon", description: "Add Shop feature will be available soon!" })
-              }
+              onClick={() => navigate("/add-shop")}
             >
               <Plus className="h-4 w-4" />
               <span className="hidden sm:inline">Add Shop</span>
