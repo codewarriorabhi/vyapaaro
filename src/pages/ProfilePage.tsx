@@ -1,8 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { User, Settings, ChevronRight, LogIn, Store, Bell, HelpCircle, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 
 const menuItems = [
-  { icon: LogIn, label: "Login / Sign Up", desc: "Access your account" },
+  { icon: LogIn, label: "Login / Sign Up", desc: "Access your account", path: "/login" },
   { icon: Store, label: "My Shops", desc: "Manage your shop listings" },
   { icon: Bell, label: "Notifications", desc: "Offers & announcements" },
   { icon: Settings, label: "Settings", desc: "App preferences" },
@@ -11,6 +12,7 @@ const menuItems = [
 ];
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   return (
     <div className="pb-20 md:pb-8 px-4 pt-6 max-w-3xl mx-auto">
       <h1 className="text-2xl font-extrabold mb-6">Profile</h1>
@@ -30,12 +32,13 @@ const ProfilePage = () => {
       </motion.div>
 
       <div className="space-y-1">
-        {menuItems.map(({ icon: Icon, label, desc }, i) => (
+        {menuItems.map(({ icon: Icon, label, desc, path }, i) => (
           <motion.button
             key={label}
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.05 }}
+            onClick={() => path && navigate(path)}
             className="flex items-center gap-3 w-full p-3.5 rounded-xl hover:bg-card transition-colors"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
