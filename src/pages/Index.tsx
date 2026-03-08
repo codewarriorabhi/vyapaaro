@@ -4,28 +4,17 @@ import { Link } from "react-router-dom";
 import SearchBar from "@/components/SearchBar";
 import ThemeToggle from "@/components/ThemeToggle";
 import CategoryGrid from "@/components/CategoryGrid";
-import ShopCard from "@/components/ShopCard";
 import ProductCard from "@/components/ProductCard";
 import HeroBanner from "@/components/HeroBanner";
 import FlashDeals from "@/components/FlashDeals";
-import { shops, products } from "@/data/mockData";
+import NearbyShops from "@/components/NearbyShops";
+import { products } from "@/data/mockData";
 import logo from "@/assets/vyapaaro-logo-new.png";
 
 const Index = () => {
   const [search, setSearch] = useState("");
 
   const query = search.toLowerCase().trim();
-
-  const nearbyShops = shops.filter((s) => {
-    if (!s.isOpen) return false;
-    if (!query) return true;
-    return (
-      s.name.toLowerCase().includes(query) ||
-      s.category.toLowerCase().includes(query) ||
-      s.tags.some((t) => t.toLowerCase().includes(query)) ||
-      s.address.toLowerCase().includes(query)
-    );
-  });
 
   const trendingProducts = products.filter((p) => {
     if (!query) return true;
@@ -69,18 +58,8 @@ const Index = () => {
         {/* Flash Deals */}
         <FlashDeals searchQuery={search} />
 
-        {/* Nearby Shops */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold">Nearby Shops</h2>
-            <Link to="/shops" className="text-xs font-semibold text-primary">View All →</Link>
-          </div>
-          <div className="space-y-3">
-            {nearbyShops.map((shop, i) => (
-              <ShopCard key={shop.id} shop={shop} index={i} />
-            ))}
-          </div>
-        </section>
+        {/* Nearby Shops - Now with geolocation */}
+        <NearbyShops searchQuery={search} />
 
         {/* Trending Products */}
         <section>
