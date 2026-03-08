@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import SearchBar from "@/components/SearchBar";
 import ThemeToggle from "@/components/ThemeToggle";
 import CategoryGrid from "@/components/CategoryGrid";
@@ -72,7 +73,7 @@ const Index = () => {
         <section>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-bold">Nearby Shops</h2>
-            <button className="text-xs font-semibold text-primary">View All →</button>
+            <Link to="/shops" className="text-xs font-semibold text-primary">View All →</Link>
           </div>
           <div className="space-y-3">
             {nearbyShops.map((shop, i) => (
@@ -85,7 +86,7 @@ const Index = () => {
         <section>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-bold">Trending Products</h2>
-            <button className="text-xs font-semibold text-primary">View All →</button>
+            <Link to="/shops" className="text-xs font-semibold text-primary">View All →</Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {trendingProducts.map((product, i) => (
