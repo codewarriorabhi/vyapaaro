@@ -22,6 +22,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import MyShopsPage from "./pages/MyShopsPage";
 import AddShopPage from "./pages/AddShopPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
+import ShopProductsPage from "./pages/ShopProductsPage";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ const App = () => {
           <Route path="/my-shops" element={<MyShopsPage />} />
           <Route path="/add-shop" element={<AddShopPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/shop/:shopId/products" element={<ShopProductsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
