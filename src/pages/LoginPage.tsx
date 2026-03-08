@@ -37,7 +37,13 @@ const LoginPage = () => {
       toast({ title: "Welcome back! 🎉", description: "You have signed in successfully." });
       navigate("/profile");
     } catch (err: any) {
-      toast({ title: "Login Failed", description: err.message || "Invalid credentials", variant: "destructive" });
+      const msg = err.message || "Invalid credentials";
+      if (msg.toLowerCase().includes("email not confirmed")) {
+        toast({ title: "Email not verified", description: "Please check your inbox and verify your email first.", variant: "destructive" });
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+      } else {
+        toast({ title: "Login Failed", description: msg, variant: "destructive" });
+      }
     } finally {
       setLoading(false);
     }
