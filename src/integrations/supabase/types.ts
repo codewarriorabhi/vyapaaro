@@ -89,6 +89,38 @@ export type Database = {
         }
         Relationships: []
       }
+      shop_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          shop_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          shop_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          shop_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_events_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shops: {
         Row: {
           address: string
@@ -238,9 +270,52 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      shop_daily_stats: {
+        Row: {
+          calls: number | null
+          clicks: number | null
+          inquiries: number | null
+          shares: number | null
+          shop_id: string | null
+          stat_date: string | null
+          views: number | null
+          whatsapp_clicks: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_events_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      get_shop_analytics: {
+        Args: { _days?: number; _shop_id: string }
+        Returns: {
+          calls: number
+          clicks: number
+          inquiries: number
+          shares: number
+          stat_date: string
+          views: number
+          whatsapp_clicks: number
+        }[]
+      }
+      get_shop_totals: {
+        Args: { _days?: number; _shop_id: string }
+        Returns: {
+          total_calls: number
+          total_clicks: number
+          total_inquiries: number
+          total_shares: number
+          total_views: number
+          total_whatsapp: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
