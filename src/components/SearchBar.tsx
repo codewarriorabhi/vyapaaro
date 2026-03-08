@@ -4,10 +4,11 @@ import { Input } from "@/components/ui/input";
 interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
+  onSubmit?: () => void;
   location?: string;
 }
 
-const SearchBar = ({ value, onChange, location = "Sector 22, Chandigarh" }: SearchBarProps) => {
+const SearchBar = ({ value, onChange, onSubmit, location = "Sector 22, Chandigarh" }: SearchBarProps) => {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -20,6 +21,9 @@ const SearchBar = ({ value, onChange, location = "Sector 22, Chandigarh" }: Sear
           placeholder="Search shops, products, or categories..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && onSubmit) onSubmit();
+          }}
           className="pl-10 h-12 rounded-xl bg-card shadow-card border-0 text-base placeholder:text-muted-foreground/60"
         />
       </div>
