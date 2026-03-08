@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SearchBar from "@/components/SearchBar";
 import ThemeToggle from "@/components/ThemeToggle";
 import CategoryGrid from "@/components/CategoryGrid";
@@ -13,6 +13,13 @@ import logo from "@/assets/vyapaaro-logo-new.png";
 
 const Index = () => {
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    if (search.trim()) {
+      navigate(`/shops?q=${encodeURIComponent(search.trim())}`);
+    }
+  };
 
   const query = search.toLowerCase().trim();
 
@@ -36,7 +43,7 @@ const Index = () => {
           <ThemeToggle className="text-primary-foreground/70 hover:text-primary-foreground" />
         </div>
         <p className="text-primary-foreground/80 text-sm mb-4">Discover local shops near you</p>
-        <SearchBar value={search} onChange={setSearch} />
+        <SearchBar value={search} onChange={setSearch} onSubmit={handleSearch} />
       </div>
 
       {/* Desktop Search */}
@@ -44,24 +51,16 @@ const Index = () => {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
           <h2 className="text-2xl font-extrabold mb-1">Discover Local Shops</h2>
           <p className="text-muted-foreground mb-4">Find the best shops, products & services near you</p>
-          <SearchBar value={search} onChange={setSearch} />
+          <SearchBar value={search} onChange={setSearch} onSubmit={handleSearch} />
         </motion.div>
       </div>
 
       <div className="px-4 mt-6 max-w-5xl mx-auto space-y-8">
-        {/* Hero Banner */}
         <HeroBanner />
-
-        {/* Categories */}
         <CategoryGrid />
-
-        {/* Flash Deals */}
         <FlashDeals searchQuery={search} />
-
-        {/* Nearby Shops - Now with geolocation */}
         <NearbyShops searchQuery={search} />
 
-        {/* Trending Products */}
         <section>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-bold">Trending Products</h2>

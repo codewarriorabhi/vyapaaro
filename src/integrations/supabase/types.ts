@@ -248,6 +248,39 @@ export type Database = {
         }
         Returns: boolean
       }
+      search_shops: {
+        Args: {
+          filter_categories?: string[]
+          filter_min_rating?: number
+          result_limit?: number
+          result_offset?: number
+          search_query?: string
+          sort_by?: string
+        }
+        Returns: {
+          address: string
+          category: string
+          cover_image: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          owner_id: string
+          phone: string | null
+          photos: string[] | null
+          tags: string[] | null
+          updated_at: string
+          whatsapp: string | null
+          working_hours: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "shops"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
     }
     Enums: {
       app_role: "customer" | "shop_owner"
