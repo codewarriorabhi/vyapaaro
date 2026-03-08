@@ -26,8 +26,14 @@ const LoginPage = () => {
     }
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      if (data.user && !data.user.email_confirmed_at) {
+        await supabase.auth.signOut();
+        toast({ title: "Email not verified", description: "Please check your inbox and verify your email first.", variant: "destructive" });
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+        return;
+      }
       toast({ title: "Welcome back! 🎉", description: "You have signed in successfully." });
       navigate("/profile");
     } catch (err: any) {
