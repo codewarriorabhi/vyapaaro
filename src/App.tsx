@@ -1,4 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { api } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,6 +31,8 @@ import OrdersPage from "./pages/OrdersPage";
 const queryClient = new QueryClient();
 
 const App = () => {
+  const healthChecked = useRef(false);
+
   useEffect(() => {
     const splash = document.getElementById("splash-screen");
     if (splash) {
@@ -36,6 +40,24 @@ const App = () => {
       splash.style.opacity = "0";
       setTimeout(() => splash.remove(), 400);
     }
+  }, []);
+
+  useEffect(() => {
+    if (healthChecked.current) return;
+    healthChecked.current = true;
+
+    api.get("/health", undefined, undefined).then((res) => {
+      if (res.error || res.status === 0) {
+        console.warn("[Health Check] API unreachable:", res.error);
+        toast({
+          title: "API Unavailable",
+          description: "The server may be starting up. Some features might be slow.",
+          variant: "destructive",
+        });
+      } else {
+        console.log("[Health Check] API is reachable ✓");
+      }
+    });
   }, []);
 
   return (
