@@ -89,6 +89,60 @@ export type Database = {
         }
         Relationships: []
       }
+      shops: {
+        Row: {
+          address: string
+          category: string
+          cover_image: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          owner_id: string
+          phone: string | null
+          photos: string[] | null
+          tags: string[] | null
+          updated_at: string
+          whatsapp: string | null
+          working_hours: string | null
+        }
+        Insert: {
+          address: string
+          category: string
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          owner_id: string
+          phone?: string | null
+          photos?: string[] | null
+          tags?: string[] | null
+          updated_at?: string
+          whatsapp?: string | null
+          working_hours?: string | null
+        }
+        Update: {
+          address?: string
+          category?: string
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          photos?: string[] | null
+          tags?: string[] | null
+          updated_at?: string
+          whatsapp?: string | null
+          working_hours?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
