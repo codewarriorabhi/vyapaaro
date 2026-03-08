@@ -66,7 +66,7 @@ const Index = () => {
         <CategoryGrid />
 
         {/* Flash Deals */}
-        <FlashDeals />
+        <FlashDeals searchQuery={search} />
 
         {/* Nearby Shops */}
         <section>
