@@ -15,6 +15,11 @@ const ShopProfile = () => {
   const shop = shops.find((s) => s.id === id);
   const shopProducts = products.filter((p) => p.shopId === id);
 
+  // Track shop view
+  useEffect(() => {
+    if (id) trackShopEvent(id, "view");
+  }, [id]);
+
   if (!shop) {
     return (
       <div className="flex items-center justify-center min-h-screen">
