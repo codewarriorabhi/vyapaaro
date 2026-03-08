@@ -68,9 +68,11 @@ const ProfilePage = () => {
   const isLoggedIn = !!user;
   const displayName = profile
     ? `${profile.first_name} ${profile.surname}`.trim()
-    : user?.user_metadata?.first_name
-      ? `${user.user_metadata.first_name} ${user.user_metadata.surname || ""}`.trim()
-      : user?.email || "User";
+    : user?.user_metadata?.full_name
+      ? user.user_metadata.full_name
+      : user?.user_metadata?.first_name
+        ? `${user.user_metadata.first_name} ${user.user_metadata.surname || ""}`.trim()
+        : user?.email || "User";
 
   const menuItems = isLoggedIn
     ? [
