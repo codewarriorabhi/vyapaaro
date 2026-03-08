@@ -90,9 +90,9 @@ const Footer = () => {
         <div className="mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Vyapaaro. All rights reserved.</p>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-primary transition-colors">Refund Policy</a>
+            <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
+            <Link to="/help-support" className="hover:text-primary transition-colors">Help & Support</Link>
           </div>
         </div>
       </div>
