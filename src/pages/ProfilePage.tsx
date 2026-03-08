@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { User, Settings, ChevronRight, LogIn, LogOut, Store, Bell, HelpCircle, Shield, Mail, Phone, MapPin, Loader2, Pencil } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import type { User as SupaUser } from "@supabase/supabase-js";
 import EditProfileDialog from "@/components/EditProfileDialog";
@@ -110,9 +111,14 @@ const ProfilePage = () => {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-4 p-4 bg-card rounded-xl shadow-card mb-6"
       >
-        <div className="w-14 h-14 rounded-full gradient-primary flex items-center justify-center">
-          <User className="h-7 w-7 text-primary-foreground" />
-        </div>
+        <Avatar className="h-14 w-14 border-2 border-border">
+          {profile?.avatar_url ? (
+            <AvatarImage src={profile.avatar_url} alt={displayName} />
+          ) : null}
+          <AvatarFallback className="gradient-primary text-primary-foreground text-lg">
+            {profile ? `${profile.first_name?.[0] || ""}${profile.surname?.[0] || ""}`.toUpperCase() || <User className="h-7 w-7" /> : <User className="h-7 w-7" />}
+          </AvatarFallback>
+        </Avatar>
         <div className="flex-1 min-w-0">
           {isLoggedIn ? (
             <>
