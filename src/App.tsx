@@ -29,7 +29,6 @@ import PlaceOrderPage from "./pages/PlaceOrderPage";
 import OrdersPage from "./pages/OrdersPage";
 import SettingsPage from "./pages/SettingsPage";
 import ShopAnalyticsPage from "./pages/ShopAnalyticsPage";
-import HelpSupportPage from "./pages/HelpSupportPage";
 
 const queryClient = new QueryClient();
 
@@ -85,7 +84,6 @@ const App = () => {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/shop/:shopId/analytics" element={<ShopAnalyticsPage />} />
-          <Route path="/help" element={<HelpSupportPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
