@@ -30,6 +30,8 @@ import OrdersPage from "./pages/OrdersPage";
 import SettingsPage from "./pages/SettingsPage";
 import ShopAnalyticsPage from "./pages/ShopAnalyticsPage";
 import HelpSupportPage from "./pages/HelpSupportPage";
+import TermsOfServicePage from "./pages/TermsOfServicePage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 
 const queryClient = new QueryClient();
 
@@ -86,6 +88,8 @@ const App = () => {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/shop/:shopId/analytics" element={<ShopAnalyticsPage />} />
           <Route path="/help-support" element={<HelpSupportPage />} />
+          <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />

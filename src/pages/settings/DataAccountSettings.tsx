@@ -21,8 +21,8 @@ const DataAccountSettings = () => {
   const [deleting] = useState(false);
 
   const linkItems = [
-    { icon: FileText, label: "Terms of Service", desc: "View our terms", action: () => toast({ title: "Coming soon" }) },
-    { icon: Shield, label: "Privacy Policy", desc: "How we protect your data", action: () => toast({ title: "Coming soon" }) },
+    { icon: FileText, label: "Terms of Service", desc: "View our terms", action: () => navigate("/terms-of-service") },
+    { icon: Shield, label: "Privacy Policy", desc: "How we protect your data", action: () => navigate("/privacy-policy") },
     { icon: HelpCircle, label: "Help & Support", desc: "Get assistance", action: () => navigate("/help-support") },
   ];
 
