@@ -189,8 +189,18 @@ const ProductDetail = () => {
               >
                 <MessageCircle className="h-4 w-4" /> Enquire
               </Button>
-              <Button className="flex-1 gap-2 gradient-primary border-0" onClick={() => navigate(`/shop/${shop.id}`)}>
-                <ShoppingBag className="h-4 w-4" /> Visit Shop
+              <Button className="flex-1 gap-2 gradient-primary border-0" onClick={() => {
+                const params = new URLSearchParams({
+                  shopId: shop.id,
+                  shopName: shop.name,
+                  productId: product.id,
+                  productName: product.name,
+                  price: String(product.price),
+                  image: product.image,
+                });
+                navigate(`/place-order?${params.toString()}`);
+              }}>
+                <ShoppingBag className="h-4 w-4" /> Order Now
               </Button>
             </>
           )}

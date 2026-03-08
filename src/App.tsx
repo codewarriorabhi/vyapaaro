@@ -23,6 +23,8 @@ import MyShopsPage from "./pages/MyShopsPage";
 import AddShopPage from "./pages/AddShopPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import ShopProductsPage from "./pages/ShopProductsPage";
+import PlaceOrderPage from "./pages/PlaceOrderPage";
+import OrdersPage from "./pages/OrdersPage";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +61,8 @@ const App = () => {
           <Route path="/add-shop" element={<AddShopPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/shop/:shopId/products" element={<ShopProductsPage />} />
+          <Route path="/place-order" element={<PlaceOrderPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
