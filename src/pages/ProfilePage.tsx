@@ -79,7 +79,7 @@ const ProfilePage = () => {
 
   const menuItems = isLoggedIn
     ? [
-        { icon: Store, label: "My Shops", desc: "Manage your shop listings" },
+        { icon: Store, label: "My Shops", desc: "Manage your shop listings", path: "/my-shops" },
         { icon: Bell, label: "Notifications", desc: "Offers & announcements" },
         { icon: Settings, label: "Settings", desc: "App preferences" },
         { icon: HelpCircle, label: "Help & Support", desc: "Get assistance" },
