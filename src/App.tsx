@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import DesktopHeader from "@/components/DesktopHeader";
+import Footer from "@/components/Footer";
 import Index from "./pages/Index";
 import ShopListing from "./pages/ShopListing";
 import ShopProfile from "./pages/ShopProfile";
@@ -44,6 +45,7 @@ const App = () => {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Footer />
         <BottomNav />
       </BrowserRouter>
     </TooltipProvider>
