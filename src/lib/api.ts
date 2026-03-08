@@ -2,6 +2,7 @@
  * API Service Layer
  * Reusable HTTP client for REST API communication
  */
+import { handleApiError } from "@/lib/api-errors";
 
 // Base URL - configurable via environment variable or default
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://vyapaaro-api.onrender.com/api";
