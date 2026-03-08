@@ -195,9 +195,7 @@ const MyShopsPage = () => {
                           size="sm"
                           variant="outline"
                           className="gap-1 text-xs h-8"
-                          onClick={() =>
-                            toast({ title: "Coming Soon", description: "Product management is coming soon!" })
-                          }
+                          onClick={() => navigate(`/shop/${shop.id}/products`)}
                         >
                           <Package className="h-3.5 w-3.5" /> Products
                         </Button>
