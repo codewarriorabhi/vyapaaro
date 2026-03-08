@@ -1,8 +1,9 @@
-import { Star, MapPin, Clock } from "lucide-react";
+import { Star, MapPin } from "lucide-react";
 import { Shop } from "@/data/mockData";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { useShopRating } from "@/hooks/useShopRating";
 
 interface ShopCardProps {
   shop: Shop;
@@ -11,6 +12,10 @@ interface ShopCardProps {
 
 const ShopCard = ({ shop, index = 0 }: ShopCardProps) => {
   const navigate = useNavigate();
+  const dbRating = useShopRating(shop.id);
+
+  const rating = dbRating ? dbRating.avg_rating : shop.rating;
+  const reviewCount = dbRating ? dbRating.review_count : shop.reviewCount;
 
   return (
     <motion.div
@@ -38,8 +43,8 @@ const ShopCard = ({ shop, index = 0 }: ShopCardProps) => {
         </div>
         <div className="flex items-center gap-1 mt-1">
           <Star className="h-3 w-3 fill-primary text-primary" />
-          <span className="text-xs font-semibold">{shop.rating}</span>
-          <span className="text-xs text-muted-foreground">({shop.reviewCount})</span>
+          <span className="text-xs font-semibold">{rating}</span>
+          <span className="text-xs text-muted-foreground">({reviewCount})</span>
         </div>
         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
           <MapPin className="h-3 w-3" />
