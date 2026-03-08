@@ -49,11 +49,6 @@ const App = () => {
     api.get("/health", undefined, undefined, { silent: true }).then((res) => {
       if (res.error || res.status === 0) {
         console.warn("[Health Check] API unreachable:", res.error);
-        toast({
-          title: "API Unavailable",
-          description: "The server may be starting up. Some features might be slow.",
-          variant: "destructive",
-        });
       } else {
         console.log("[Health Check] API is reachable ✓");
       }
