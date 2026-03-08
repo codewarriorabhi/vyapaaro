@@ -27,6 +27,7 @@ import VerifyEmailPage from "./pages/VerifyEmailPage";
 import ShopProductsPage from "./pages/ShopProductsPage";
 import PlaceOrderPage from "./pages/PlaceOrderPage";
 import OrdersPage from "./pages/OrdersPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => {
           <Route path="/shop/:shopId/products" element={<ShopProductsPage />} />
           <Route path="/place-order" element={<PlaceOrderPage />} />
           <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
