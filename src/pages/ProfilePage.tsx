@@ -206,6 +206,13 @@ const ProfilePage = () => {
           </motion.button>
         )}
       </div>
+
+      <EditProfileDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        profile={profile}
+        onUpdated={() => user && fetchProfile(user.id)}
+      />
     </div>
   );
 };
