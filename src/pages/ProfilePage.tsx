@@ -111,8 +111,14 @@ const ProfilePage = () => {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-4 p-4 bg-card rounded-xl shadow-card mb-6"
       >
-        <div className="w-14 h-14 rounded-full gradient-primary flex items-center justify-center">
-          <User className="h-7 w-7 text-primary-foreground" />
+        <Avatar className="h-14 w-14 border-2 border-border">
+          {profile?.avatar_url ? (
+            <AvatarImage src={profile.avatar_url} alt={displayName} />
+          ) : null}
+          <AvatarFallback className="gradient-primary text-primary-foreground text-lg">
+            {profile ? `${profile.first_name?.[0] || ""}${profile.surname?.[0] || ""}`.toUpperCase() || <User className="h-7 w-7" /> : <User className="h-7 w-7" />}
+          </AvatarFallback>
+        </Avatar>
         </div>
         <div className="flex-1 min-w-0">
           {isLoggedIn ? (
