@@ -97,7 +97,7 @@ const LoginPage = () => {
 
               {/* Forgot Password */}
               <div className="text-right">
-                <button type="button" className="text-xs text-primary font-medium hover:underline">
+                <button type="button" onClick={() => navigate("/forgot-password")} className="text-xs text-primary font-medium hover:underline">
                   Forgot password?
                 </button>
               </div>
