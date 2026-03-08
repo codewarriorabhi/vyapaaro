@@ -121,6 +121,50 @@ export type Database = {
           },
         ]
       }
+      shop_reviews: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          owner_reply: string | null
+          owner_reply_at: string | null
+          rating: number
+          shop_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string
+          created_at?: string
+          id?: string
+          owner_reply?: string | null
+          owner_reply_at?: string | null
+          rating: number
+          shop_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          owner_reply?: string | null
+          owner_reply_at?: string | null
+          rating?: number
+          shop_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_reviews_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shops: {
         Row: {
           address: string
@@ -303,6 +347,13 @@ export type Database = {
           stat_date: string
           views: number
           whatsapp_clicks: number
+        }[]
+      }
+      get_shop_rating: {
+        Args: { _shop_id: string }
+        Returns: {
+          avg_rating: number
+          review_count: number
         }[]
       }
       get_shop_totals: {
