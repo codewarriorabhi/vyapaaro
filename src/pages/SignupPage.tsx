@@ -139,8 +139,8 @@ const SignupPage = () => {
       });
       if (error) throw error;
       setStep("complete");
-      toast({ title: "Account Created! 🎉", description: "Welcome to Vyapaaro." });
-      setTimeout(() => navigate("/"), 2000);
+      toast({ title: "Account Created! 🎉", description: "Please verify your email." });
+      setTimeout(() => navigate(`/verify-email?email=${encodeURIComponent(data.email)}`), 2000);
     } catch (err: any) {
       toast({ title: "Signup Failed", description: err.message, variant: "destructive" });
     } finally {
