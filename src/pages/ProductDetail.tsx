@@ -56,8 +56,11 @@ const ProductDetail = () => {
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div className="absolute top-4 right-4 flex gap-2">
-          <button className="w-9 h-9 rounded-full bg-card/80 backdrop-blur flex items-center justify-center">
-            <Heart className="h-4 w-4" />
+          <button
+            onClick={handleSave}
+            className="w-9 h-9 rounded-full bg-card/80 backdrop-blur flex items-center justify-center"
+          >
+            <Heart className={`h-4 w-4 transition-colors ${isSaved ? "fill-destructive text-destructive" : ""}`} />
           </button>
           <button className="w-9 h-9 rounded-full bg-card/80 backdrop-blur flex items-center justify-center">
             <Share2 className="h-4 w-4" />
