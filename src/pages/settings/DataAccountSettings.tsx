@@ -18,12 +18,12 @@ import { Download, PauseCircle, Trash2, FileText, Shield, HelpCircle, Loader2 } 
 
 const DataAccountSettings = () => {
   const navigate = useNavigate();
-  const [deleting, setDeleting] = useState(false);
+  const [deleting] = useState(false);
 
   const linkItems = [
     { icon: FileText, label: "Terms of Service", desc: "View our terms", action: () => toast({ title: "Coming soon" }) },
     { icon: Shield, label: "Privacy Policy", desc: "How we protect your data", action: () => toast({ title: "Coming soon" }) },
-    { icon: HelpCircle, label: "Help & Support", desc: "Get assistance", action: () => toast({ title: "Coming soon" }) },
+    { icon: HelpCircle, label: "Help & Support", desc: "Get assistance", action: () => navigate("/help-support") },
   ];
 
   return (
