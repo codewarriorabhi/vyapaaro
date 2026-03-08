@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { User, Settings, ChevronRight, LogIn, LogOut, Store, Bell, HelpCircle, Shield, Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { User, Settings, ChevronRight, LogIn, LogOut, Store, Bell, HelpCircle, Shield, Mail, Phone, MapPin, Loader2, Pencil } from "lucide-react";
 import { motion } from "framer-motion";
 import type { User as SupaUser } from "@supabase/supabase-js";
+import EditProfileDialog from "@/components/EditProfileDialog";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -124,6 +126,14 @@ const ProfilePage = () => {
             </>
           )}
         </div>
+        {isLoggedIn && (
+          <button
+            onClick={() => setEditOpen(true)}
+            className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 hover:bg-primary/20 transition-colors"
+          >
+            <Pencil className="h-4 w-4 text-primary" />
+          </button>
+        )}
       </motion.div>
 
       {/* User details card when logged in */}
@@ -196,6 +206,13 @@ const ProfilePage = () => {
           </motion.button>
         )}
       </div>
+
+      <EditProfileDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        profile={profile}
+        onUpdated={() => user && fetchProfile(user.id)}
+      />
     </div>
   );
 };
