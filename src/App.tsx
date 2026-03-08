@@ -46,7 +46,7 @@ const App = () => {
     if (healthChecked.current) return;
     healthChecked.current = true;
 
-    api.get("/health", undefined, undefined).then((res) => {
+    api.get("/health", undefined, undefined, { silent: true }).then((res) => {
       if (res.error || res.status === 0) {
         console.warn("[Health Check] API unreachable:", res.error);
         toast({
