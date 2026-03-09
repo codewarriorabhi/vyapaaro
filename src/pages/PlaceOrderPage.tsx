@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { api } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   ArrowLeft, ShoppingBag, Minus, Plus, Loader2, CheckCircle, Trash2, Package,
@@ -31,7 +29,6 @@ const PlaceOrderPage = () => {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
 
-  // Pre-populate cart from URL params (productId, name, price, image)
   const [cart, setCart] = useState<CartItem[]>(() => {
     const pid = searchParams.get("productId");
     const pname = searchParams.get("productName");
@@ -83,22 +80,29 @@ const PlaceOrderPage = () => {
 
     setLoading(true);
     try {
-      const response = await api.post<{ id?: string; orderId?: string; order?: { id: string }; message?: string }>(
-        "/orders/create",
-        {
-          userId,
-          shopId,
-          products: cart.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-          })),
-        }
-      );
+      const items = cart.map((item) => ({
+        product_id: item.productId,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image || "",
+      }));
 
-      if (response.error) throw new Error(response.error);
+      const { data, error } = await supabase
+        .from("orders")
+        .insert({
+          user_id: userId,
+          shop_id: shopId,
+          items: items as any,
+          total,
+          status: "pending",
+        })
+        .select("id")
+        .single();
 
-      const newOrderId = response.data?.id || response.data?.orderId || response.data?.order?.id || "ORD-" + Date.now();
-      setOrderId(newOrderId);
+      if (error) throw error;
+
+      setOrderId(data.id);
       setOrderPlaced(true);
       toast({ title: "Order Placed! 🎉", description: "Your order has been submitted successfully." });
     } catch (err: any) {
@@ -108,7 +112,6 @@ const PlaceOrderPage = () => {
     }
   };
 
-  // Order confirmation screen
   if (orderPlaced) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4 pb-24 md:pb-8">
@@ -134,7 +137,7 @@ const PlaceOrderPage = () => {
               {orderId && (
                 <div className="bg-muted rounded-lg px-4 py-2 inline-block">
                   <p className="text-xs text-muted-foreground">Order ID</p>
-                  <p className="text-sm font-mono font-semibold">{orderId}</p>
+                  <p className="text-sm font-mono font-semibold">{orderId.slice(0, 8)}</p>
                 </div>
               )}
               <div className="bg-muted/50 rounded-lg p-4 text-left space-y-2">
@@ -167,7 +170,6 @@ const PlaceOrderPage = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8">
-      {/* Header */}
       <div className="gradient-primary px-4 pt-8 pb-6 rounded-b-3xl">
         <button
           onClick={() => navigate(-1)}
@@ -185,7 +187,6 @@ const PlaceOrderPage = () => {
       </div>
 
       <div className="max-w-lg mx-auto px-4 -mt-4 space-y-4">
-        {/* Cart items */}
         <Card className="shadow-card">
           <CardContent className="pt-5 pb-4">
             <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -242,7 +243,6 @@ const PlaceOrderPage = () => {
           </CardContent>
         </Card>
 
-        {/* Order summary */}
         {cart.length > 0 && (
           <Card className="shadow-card">
             <CardContent className="pt-5 pb-5 space-y-3">

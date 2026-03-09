@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { api } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -12,24 +11,21 @@ import {
 } from "lucide-react";
 import logo from "@/assets/vyapaaro-logo-new.png";
 
-interface OrderProduct {
-  productId: string;
-  productName?: string;
-  name?: string;
+interface OrderItem {
+  product_id: string;
+  name: string;
+  price: number;
   quantity: number;
-  price?: number;
+  image?: string;
 }
 
 interface Order {
   id: string;
-  orderId?: string;
-  shopId: string;
-  shopName?: string;
-  products: OrderProduct[];
-  status?: string;
-  total?: number;
-  createdAt?: string;
-  created_at?: string;
+  shop_id: string;
+  items: OrderItem[];
+  status: string;
+  total: number;
+  created_at: string;
 }
 
 const statusConfig: Record<string, { label: string; icon: typeof Clock; color: string }> = {
@@ -44,53 +40,36 @@ const OrdersPage = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const init = async () => {
+    const fetchOrders = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         toast({ title: "Please log in", variant: "destructive" });
         navigate("/login");
         return;
       }
-      setUserId(session.user.id);
-    };
-    init();
-  }, [navigate]);
 
-  useEffect(() => {
-    if (!userId) return;
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .order("created_at", { ascending: false });
 
-    const fetchOrders = async () => {
-      setLoading(true);
-      const response = await api.get<Order[] | { orders: Order[]; data: Order[] }>(
-        `/orders/user/${userId}`
-      );
-
-      if (response.error) {
-        console.warn("Orders API error:", response.error);
+      if (error) {
+        console.warn("Orders fetch error:", error);
         setOrders([]);
-      } else if (response.data) {
-        let orderData: Order[] = [];
-        if (Array.isArray(response.data)) {
-          orderData = response.data;
-        } else if (Array.isArray((response.data as any).orders)) {
-          orderData = (response.data as any).orders;
-        } else if (Array.isArray((response.data as any).data)) {
-          orderData = (response.data as any).data;
-        }
-        setOrders(orderData);
+      } else {
+        setOrders((data ?? []) as Order[]);
       }
       setLoading(false);
     };
 
     fetchOrders();
-  }, [userId]);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8">
-      {/* Header */}
       <div className="gradient-primary px-4 pt-8 pb-6 rounded-b-3xl">
         <button
           onClick={() => navigate("/profile")}
@@ -108,7 +87,6 @@ const OrdersPage = () => {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 -mt-4 space-y-4">
-        {/* Loading */}
         {loading && (
           <div className="flex items-center justify-center py-16">
             <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
@@ -116,7 +94,6 @@ const OrdersPage = () => {
           </div>
         )}
 
-        {/* Empty state */}
         {!loading && orders.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -136,18 +113,16 @@ const OrdersPage = () => {
           </motion.div>
         )}
 
-        {/* Order list */}
         {!loading && orders.length > 0 && (
           <div className="space-y-4">
             {orders.map((order, i) => {
-              const displayId = order.orderId || order.id;
               const status = order.status || "pending";
               const config = statusConfig[status] || statusConfig.pending;
               const StatusIcon = config.icon;
-              const date = order.createdAt || order.created_at;
-              const formattedDate = date ? new Date(date).toLocaleDateString("en-IN", {
+              const formattedDate = new Date(order.created_at).toLocaleDateString("en-IN", {
                 day: "numeric", month: "short", year: "numeric",
-              }) : null;
+              });
+              const items: OrderItem[] = Array.isArray(order.items) ? order.items : [];
 
               return (
                 <motion.div
@@ -158,11 +133,10 @@ const OrdersPage = () => {
                 >
                   <Card className="shadow-card border-0">
                     <CardContent className="p-4 space-y-3">
-                      {/* Order header */}
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-xs text-muted-foreground">Order</p>
-                          <p className="text-sm font-mono font-semibold">{displayId}</p>
+                          <p className="text-sm font-mono font-semibold">{order.id.slice(0, 8)}</p>
                         </div>
                         <Badge className={`${config.color} border-0 gap-1`}>
                           <StatusIcon className="h-3 w-3" />
@@ -170,21 +144,13 @@ const OrdersPage = () => {
                         </Badge>
                       </div>
 
-                      {/* Shop name */}
-                      {order.shopName && (
-                        <p className="text-xs text-muted-foreground">
-                          From <span className="font-medium text-foreground">{order.shopName}</span>
-                        </p>
-                      )}
-
-                      {/* Products */}
                       <div className="space-y-1.5">
-                        {order.products.map((p, j) => (
+                        {items.map((p, j) => (
                           <div key={j} className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2">
                               <Package className="h-3.5 w-3.5 text-muted-foreground" />
                               <span className="text-muted-foreground">
-                                {p.productName || p.name || p.productId} × {p.quantity}
+                                {p.name || p.product_id} × {p.quantity}
                               </span>
                             </div>
                             {p.price && (
@@ -194,16 +160,11 @@ const OrdersPage = () => {
                         ))}
                       </div>
 
-                      {/* Footer */}
                       <div className="flex items-center justify-between pt-2 border-t border-border">
-                        {formattedDate && (
-                          <span className="text-xs text-muted-foreground">{formattedDate}</span>
-                        )}
-                        {order.total !== undefined && (
-                          <span className="text-sm font-bold text-primary">
-                            ₹{order.total.toLocaleString("en-IN")}
-                          </span>
-                        )}
+                        <span className="text-xs text-muted-foreground">{formattedDate}</span>
+                        <span className="text-sm font-bold text-primary">
+                          ₹{Number(order.total).toLocaleString("en-IN")}
+                        </span>
                       </div>
                     </CardContent>
                   </Card>
