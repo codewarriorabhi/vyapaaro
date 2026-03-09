@@ -2,19 +2,20 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Star, MapPin, Clock, Phone, MessageCircle, Heart, Navigation, Share2 } from "lucide-react";
-import { shops, products } from "@/data/mockData";
+import { shops } from "@/data/mockData";
 import { supabase } from "@/integrations/supabase/client";
 import ProductCard from "@/components/ProductCard";
 import ShopReviews from "@/components/ShopReviews";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { trackShopEvent } from "@/hooks/useShopTracking";
+import { useShopProducts } from "@/hooks/useProducts";
 
 const ShopProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const shop = shops.find((s) => s.id === id);
-  const shopProducts = products.filter((p) => p.shopId === id);
+  const { data: shopProducts = [] } = useShopProducts(id);
   const [isOwner, setIsOwner] = useState(false);
 
   // Track shop view
@@ -127,7 +128,7 @@ const ShopProfile = () => {
           </section>
         )}
 
-        {/* Reviews - Now from database */}
+        {/* Reviews */}
         <section className="mt-8">
           <h2 className="text-lg font-bold mb-3">Reviews & Ratings</h2>
           {id && <ShopReviews shopId={id} isOwner={isOwner} />}

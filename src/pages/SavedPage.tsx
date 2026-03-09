@@ -1,11 +1,12 @@
-import { Heart, Star } from "lucide-react";
+import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSavedItems } from "@/contexts/SavedItemsContext";
-import { products } from "@/data/mockData";
+import { useProducts } from "@/hooks/useProducts";
 import ProductCard from "@/components/ProductCard";
 
 const SavedPage = () => {
   const { savedProductIds } = useSavedItems();
+  const { data: products = [] } = useProducts();
   const savedProducts = products.filter((p) => savedProductIds.includes(p.id));
 
   return (

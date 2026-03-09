@@ -1,17 +1,17 @@
-import { Product } from "@/data/mockData";
+import { DbProduct } from "@/hooks/useProducts";
 import { Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 interface ProductCardProps {
-  product: Product;
+  product: DbProduct;
   index?: number;
 }
 
 const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const navigate = useNavigate();
-  const discount = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const discount = product.original_price
+    ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
     : 0;
 
   return (
@@ -43,8 +43,8 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         </div>
         <div className="flex items-baseline gap-2 mt-1.5">
           <span className="text-base font-bold">₹{product.price.toLocaleString()}</span>
-          {product.originalPrice && (
-            <span className="text-xs text-muted-foreground line-through">₹{product.originalPrice.toLocaleString()}</span>
+          {product.original_price && (
+            <span className="text-xs text-muted-foreground line-through">₹{product.original_price.toLocaleString()}</span>
           )}
         </div>
       </div>
