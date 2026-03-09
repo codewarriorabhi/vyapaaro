@@ -16,21 +16,6 @@ export interface Shop {
   priceLevel?: 1 | 2 | 3;
 }
 
-export interface Product {
-  id: string;
-  shopId: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  images?: string[];
-  category: string;
-  inStock: boolean;
-  rating: number;
-  reviewCount: number;
-  description?: string;
-  specifications?: Record<string, string>;
-}
 
 export interface Category {
   id: string;
@@ -267,91 +252,6 @@ export const shops: Shop[] = [
   },
 ];
 
-export const products: Product[] = [
-  {
-    id: "p1",
-    shopId: "1",
-    name: "Banarasi Silk Saree",
-    price: 3499,
-    originalPrice: 5999,
-    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=400&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=800&h=800&fit=crop",
-    ],
-    category: "clothing",
-    inStock: true,
-    rating: 4.6,
-    reviewCount: 42,
-    description: "Beautiful Banarasi silk saree with intricate gold zari work. Perfect for weddings and festive occasions.",
-    specifications: { "Fabric": "Pure Silk", "Length": "6.3 meters", "Blouse": "Included", "Wash Care": "Dry Clean Only" },
-  },
-  {
-    id: "p2",
-    shopId: "2",
-    name: "Wireless Earbuds Pro",
-    price: 1299,
-    originalPrice: 2499,
-    image: "https://images.unsplash.com/photo-1590658268037-6bf12f032f55?w=400&h=400&fit=crop",
-    category: "electronics",
-    inStock: true,
-    rating: 4.3,
-    reviewCount: 89,
-    description: "Premium wireless earbuds with active noise cancellation and 24-hour battery life.",
-    specifications: { "Battery": "24 hours", "Connectivity": "Bluetooth 5.3", "Water Resistance": "IPX5" },
-  },
-  {
-    id: "p3",
-    shopId: "3",
-    name: "Special Thali",
-    price: 249,
-    image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=400&fit=crop",
-    category: "food",
-    inStock: true,
-    rating: 4.8,
-    reviewCount: 156,
-    description: "Complete meal with 4 curries, dal, rice, 4 rotis, raita, salad, and dessert.",
-  },
-  {
-    id: "p4",
-    shopId: "1",
-    name: "Cotton Kurta Set",
-    price: 1299,
-    originalPrice: 1899,
-    image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=400&fit=crop",
-    category: "clothing",
-    inStock: true,
-    rating: 4.4,
-    reviewCount: 67,
-    description: "Comfortable cotton kurta with palazzo set. Available in multiple colors.",
-  },
-  {
-    id: "p5",
-    shopId: "4",
-    name: "L-Shape Sofa Set",
-    price: 24999,
-    originalPrice: 35000,
-    image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop",
-    category: "furniture",
-    inStock: true,
-    rating: 4.5,
-    reviewCount: 23,
-    description: "Premium fabric L-shape sofa with 5-year warranty. Fits perfectly in modern living rooms.",
-    specifications: { "Material": "Premium Fabric", "Seating": "6 persons", "Warranty": "5 years" },
-  },
-  {
-    id: "p6",
-    shopId: "6",
-    name: "Organic Vegetable Basket",
-    price: 399,
-    image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=400&fit=crop",
-    category: "grocery",
-    inStock: true,
-    rating: 4.6,
-    reviewCount: 89,
-    description: "Assorted organic vegetables basket - 5kg. Farm fresh, pesticide-free.",
-  },
-];
 
 export const reviews: Review[] = [
   { id: "r1", userName: "Priya S.", avatar: "PS", rating: 5, comment: "Amazing quality sarees! Best collection in the area.", date: "2 days ago" },
