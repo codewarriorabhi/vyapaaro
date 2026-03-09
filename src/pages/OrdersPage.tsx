@@ -60,7 +60,7 @@ const OrdersPage = () => {
         console.warn("Orders fetch error:", error);
         setOrders([]);
       } else {
-        setOrders((data ?? []) as Order[]);
+        setOrders((data ?? []) as unknown as Order[]);
       }
       setLoading(false);
     };
