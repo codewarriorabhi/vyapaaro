@@ -44,6 +44,68 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image: string
+          images: string[] | null
+          in_stock: boolean
+          name: string
+          original_price: number | null
+          price: number
+          rating: number
+          review_count: number
+          shop_id: string
+          specifications: Json | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string
+          images?: string[] | null
+          in_stock?: boolean
+          name: string
+          original_price?: number | null
+          price: number
+          rating?: number
+          review_count?: number
+          shop_id: string
+          specifications?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string
+          images?: string[] | null
+          in_stock?: boolean
+          name?: string
+          original_price?: number | null
+          price?: number
+          rating?: number
+          review_count?: number
+          shop_id?: string
+          specifications?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string
