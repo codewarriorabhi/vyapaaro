@@ -44,6 +44,13 @@
         @keyframes splash-spin { to { transform: rotate(360deg); } }
         @keyframes splash-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
       </style>
+      <script>
+        // Fallback: remove splash after 4s even if React hasn't mounted
+        setTimeout(function() {
+          var s = document.getElementById('splash-screen');
+          if (s) { s.style.transition = 'opacity 0.4s ease'; s.style.opacity = '0'; setTimeout(function() { if (s.parentNode) s.parentNode.removeChild(s); }, 400); }
+        }, 4000);
+      </script>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
