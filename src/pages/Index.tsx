@@ -8,12 +8,13 @@ import ProductCard from "@/components/ProductCard";
 import HeroBanner from "@/components/HeroBanner";
 import FlashDeals from "@/components/FlashDeals";
 import NearbyShops from "@/components/NearbyShops";
-import { products } from "@/data/mockData";
+import { useProducts } from "@/hooks/useProducts";
 import logo from "@/assets/vyapaaro-logo-new.png";
 
 const Index = () => {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const { data: products = [] } = useProducts();
 
   const handleSearch = () => {
     if (search.trim()) {
@@ -61,17 +62,19 @@ const Index = () => {
         <FlashDeals searchQuery={search} />
         <NearbyShops searchQuery={search} />
 
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold">Trending Products</h2>
-            <Link to="/shops" className="text-xs font-semibold text-primary">View All →</Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {trendingProducts.map((product, i) => (
-              <ProductCard key={product.id} product={product} index={i} />
-            ))}
-          </div>
-        </section>
+        {trendingProducts.length > 0 && (
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-bold">Trending Products</h2>
+              <Link to="/shops" className="text-xs font-semibold text-primary">View All →</Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {trendingProducts.map((product, i) => (
+                <ProductCard key={product.id} product={product} index={i} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

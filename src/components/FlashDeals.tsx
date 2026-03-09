@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Zap } from "lucide-react";
 import ProductCard from "./ProductCard";
-import { products } from "@/data/mockData";
+import { useProducts } from "@/hooks/useProducts";
 
 const getEndOfDay = () => {
   const now = new Date();
@@ -25,6 +25,7 @@ interface FlashDealsProps {
 
 const FlashDeals = ({ searchQuery = "" }: FlashDealsProps) => {
   const [remaining, setRemaining] = useState(getEndOfDay());
+  const { data: products = [] } = useProducts();
 
   useEffect(() => {
     const timer = setInterval(() => setRemaining(getEndOfDay()), 1000);
@@ -35,7 +36,7 @@ const FlashDeals = ({ searchQuery = "" }: FlashDealsProps) => {
 
   const query = searchQuery.toLowerCase().trim();
   const dealProducts = products.filter((p) => {
-    if (!p.originalPrice || p.originalPrice <= p.price) return false;
+    if (!p.original_price || p.original_price <= p.price) return false;
     if (!query) return true;
     return (
       p.name.toLowerCase().includes(query) ||

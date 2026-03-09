@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Star, Heart, Share2, ShoppingBag, MessageCircle, Flag } from "lucide-react";
-import { products, shops, reviews } from "@/data/mockData";
+import { ArrowLeft, Star, Heart, Share2, ShoppingBag, MessageCircle, Flag, Loader2 } from "lucide-react";
+import { useProduct } from "@/hooks/useProducts";
+import { shops, reviews } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,8 +13,8 @@ import { useSavedItems } from "@/contexts/SavedItemsContext";
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = products.find((p) => p.id === id);
-  const shop = product ? shops.find((s) => s.id === product.shopId) : null;
+  const { data: product, isLoading } = useProduct(id);
+  const shop = product ? shops.find((s) => s.id === product.shop_id) : null;
   const [activeImage, setActiveImage] = useState(0);
   const { toggleSaveProduct, isProductSaved } = useSavedItems();
 
@@ -28,6 +29,14 @@ const ProductDetail = () => {
     });
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   if (!product) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -36,9 +45,9 @@ const ProductDetail = () => {
     );
   }
 
-  const allImages = product.images || [product.image];
-  const discount = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const allImages = product.images?.length ? product.images : [product.image];
+  const discount = product.original_price
+    ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
     : 0;
 
   return (
@@ -87,7 +96,7 @@ const ProductDetail = () => {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
           <div className="flex items-start justify-between gap-2">
             <h1 className="text-xl font-extrabold">{product.name}</h1>
-            {product.inStock ? (
+            {product.in_stock ? (
               <Badge className="gradient-primary border-0 flex-shrink-0">In Stock</Badge>
             ) : (
               <Badge variant="destructive" className="flex-shrink-0">Out of Stock</Badge>
@@ -97,14 +106,14 @@ const ProductDetail = () => {
           <div className="flex items-center gap-1 mt-2">
             <Star className="h-4 w-4 fill-primary text-primary" />
             <span className="text-sm font-semibold">{product.rating}</span>
-            <span className="text-sm text-muted-foreground">({product.reviewCount} reviews)</span>
+            <span className="text-sm text-muted-foreground">({product.review_count} reviews)</span>
           </div>
 
           <div className="flex items-baseline gap-3 mt-3">
             <span className="text-3xl font-extrabold">₹{product.price.toLocaleString()}</span>
-            {product.originalPrice && (
+            {product.original_price && (
               <>
-                <span className="text-lg text-muted-foreground line-through">₹{product.originalPrice.toLocaleString()}</span>
+                <span className="text-lg text-muted-foreground line-through">₹{product.original_price.toLocaleString()}</span>
                 <Badge variant="secondary" className="text-accent font-bold">{discount}% off</Badge>
               </>
             )}
@@ -115,14 +124,14 @@ const ProductDetail = () => {
           )}
 
           {/* Specifications */}
-          {product.specifications && (
+          {product.specifications && Object.keys(product.specifications).length > 0 && (
             <div className="mt-6">
               <h2 className="text-base font-bold mb-2">Specifications</h2>
               <div className="bg-card rounded-xl shadow-card divide-y divide-border">
                 {Object.entries(product.specifications).map(([key, value]) => (
                   <div key={key} className="flex justify-between px-4 py-2.5 text-sm">
                     <span className="text-muted-foreground">{key}</span>
-                    <span className="font-medium">{value}</span>
+                    <span className="font-medium">{String(value)}</span>
                   </div>
                 ))}
               </div>
