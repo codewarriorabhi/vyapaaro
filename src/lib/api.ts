@@ -5,7 +5,7 @@
 import { handleApiError } from "@/lib/api-errors";
 
 // Base URL - configurable via environment variable or default
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://vyapaaro-api.onrender.com/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://vyaapaaro.vercel.app//api";
 
 export interface ApiResponse<T = unknown> {
   data: T | null;

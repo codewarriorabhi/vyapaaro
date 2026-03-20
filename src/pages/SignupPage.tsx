@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { api } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,24 +75,7 @@ const SignupPage = () => {
     }
   };
 
-  // Call external backend API to register user
-  const registerWithBackendApi = async (data: SignupForm): Promise<boolean> => {
-    const response = await api.post<{ message?: string }>("/auth/signup", {
-      firstName: data.firstName,
-      surname: data.surname,
-      email: data.email,
-      phone: data.phone,
-      address: data.address,
-      userType: data.userType,
-    });
 
-    if (response.error) {
-      toast({ title: "Signup Failed", description: response.error, variant: "destructive" });
-      return false;
-    }
-
-    return true;
-  };
 
   const verifyEmailOtp = async () => {
     if (emailOtp.length !== 6) return;
@@ -141,14 +123,7 @@ const SignupPage = () => {
   const createAccount = async (data: SignupForm, emailV = false, phoneV = false) => {
     setLoading(true);
     try {
-      // First register with external backend API
-      const apiSuccess = await registerWithBackendApi(data);
-      if (!apiSuccess) {
-        setLoading(false);
-        return;
-      }
-
-      // Then create Supabase auth account
+      // Create Supabase auth account
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,

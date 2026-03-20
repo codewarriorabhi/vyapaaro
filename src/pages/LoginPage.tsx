@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { api } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Lock, Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import logo from "@/assets/vyapaaro-logo-new.png";
-
-const AUTH_TOKEN_KEY = "vyapaaro_auth_token";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -29,28 +26,10 @@ const LoginPage = () => {
     }
     setLoading(true);
     try {
-      // Call backend API for login
-      const response = await api.post<{ token?: string; accessToken?: string; message?: string }>("/auth/login", {
-        email,
-        password,
-      });
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
-
-      // Store token in localStorage
-      const token = response.data?.token || response.data?.accessToken;
-      if (token) {
-        localStorage.setItem(AUTH_TOKEN_KEY, token);
-        api.setAuthToken(token);
-      }
-
-      // Also sign in with Supabase for session management
+      // Sign in with Supabase
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        // If Supabase login fails but API succeeded, still proceed
-        console.warn("Supabase auth failed:", error.message);
+        throw new Error(error.message);
       }
       
       if (data?.user && !data.user.email_confirmed_at) {
@@ -73,7 +52,7 @@ const LoginPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
