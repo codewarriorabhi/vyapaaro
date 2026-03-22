@@ -392,6 +392,11 @@ const SignupPage = () => {
                       provider: "google",
                       options: {
                         redirectTo: window.location.origin,
+                        data: {
+                          role: userType,
+                          first_name: "",
+                          surname: "",
+                        },
                       },
                     });
                     if (error) throw error;
