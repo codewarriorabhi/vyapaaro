@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { api } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -58,6 +59,16 @@ const App = () => {
         console.log("[Health Check] API is reachable ✓");
       }
     });
+  }, []);
+
+  // Get logged-in user on app load
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      console.log("User:", data.user);
+    };
+
+    getUser();
   }, []);
 
   return (
