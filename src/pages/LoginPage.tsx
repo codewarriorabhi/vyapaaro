@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Lock, Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Loader2, ArrowLeft, Eye, EyeOff, User, Store, CheckCircle } from "lucide-react";
+import { saveOAuthRole } from "@/contexts/AuthContext";
 import logo from "@/assets/vyapaaro-logo-new.png";
 
 const LoginPage = () => {
@@ -16,6 +17,9 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  // Role selection for Google OAuth (allows existing customers to upgrade to shop owner)
+  const [googleUserType, setGoogleUserType] = useState<"customer" | "shop_owner">("customer");
+  const [showRoleSelector, setShowRoleSelector] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,13 +57,22 @@ const LoginPage = () => {
     }
   }
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = async (role?: "customer" | "shop_owner") => {
+    const selectedRole = role || googleUserType;
     setGoogleLoading(true);
     try {
+      // Save role to localStorage before OAuth redirect
+      // The AuthContext will read this after login and insert/update in database
+      saveOAuthRole(selectedRole);
+      console.log("[LoginPage] Saved OAuth role to localStorage:", selectedRole);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: window.location.origin,
+          data: {
+            role: selectedRole,
+          },
         },
       });
 
@@ -70,6 +83,7 @@ const LoginPage = () => {
       toast({ title: "Google Sign-In Failed", description: err.message, variant: "destructive" });
     } finally {
       setGoogleLoading(false);
+      setShowRoleSelector(false);
     }
   };
 
@@ -154,11 +168,44 @@ const LoginPage = () => {
                 </div>
               </div>
 
+              {/* Role Selector for Google OAuth */}
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">Sign in as (for new accounts or role upgrade)</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setGoogleUserType("customer")}
+                    className={`p-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                      googleUserType === "customer"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-1.5">
+                      <User className="h-4 w-4" /> Customer
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGoogleUserType("shop_owner")}
+                    className={`p-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                      googleUserType === "shop_owner"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-1.5">
+                      <Store className="h-4 w-4" /> Shop Owner
+                    </span>
+                  </button>
+                </div>
+              </div>
+
               <Button
                 type="button"
                 variant="outline"
                 className="w-full h-12 text-base font-medium gap-3"
-                onClick={handleGoogleSignIn}
+                onClick={() => handleGoogleSignIn()}
                 disabled={googleLoading}
               >
                 {googleLoading ? (

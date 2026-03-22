@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SavedItemsProvider } from "@/contexts/SavedItemsContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import BottomNav from "@/components/BottomNav";
 import DesktopHeader from "@/components/DesktopHeader";
 import Footer from "@/components/Footer";
@@ -33,6 +34,7 @@ import ShopAnalyticsPage from "./pages/ShopAnalyticsPage";
 import HelpSupportPage from "./pages/HelpSupportPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -73,41 +75,64 @@ const App = () => {
 
   return (
   <QueryClientProvider client={queryClient}>
-    <SavedItemsProvider>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <DesktopHeader />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/shops" element={<ShopListing />} />
-          <Route path="/shop/:id" element={<ShopProfile />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/saved" element={<SavedPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/my-shops" element={<MyShopsPage />} />
-          <Route path="/add-shop" element={<AddShopPage />} />
-          <Route path="/verify-email" element={<VerifyEmailPage />} />
+    <AuthProvider>
+      <SavedItemsProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <DesktopHeader />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/shops" element={<ShopListing />} />
+              <Route path="/shop/:id" element={<ShopProfile />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/saved" element={<SavedPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route 
+            path="/my-shops" 
+            element={
+              <ProtectedRoute requiredRole="shop_owner">
+                <MyShopsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/add-shop" 
+            element={
+              <ProtectedRoute requiredRole="shop_owner">
+                <AddShopPage />
+              </ProtectedRoute>
+            } 
+          />
+              <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/shop/:shopId/products" element={<ShopProductsPage />} />
           <Route path="/place-order" element={<PlaceOrderPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/shop/:shopId/analytics" element={<ShopAnalyticsPage />} />
-          <Route path="/help-support" element={<HelpSupportPage />} />
-          <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Footer />
-        <BottomNav />
-      </BrowserRouter>
-    </TooltipProvider>
-    </SavedItemsProvider>
+          <Route 
+            path="/shop/:shopId/analytics" 
+            element={
+              <ProtectedRoute requiredRole="shop_owner">
+                <ShopAnalyticsPage />
+              </ProtectedRoute>
+            } 
+          />
+              <Route path="/help-support" element={<HelpSupportPage />} />
+              <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Footer />
+            <BottomNav />
+          </BrowserRouter>
+        </TooltipProvider>
+      </SavedItemsProvider>
+    </AuthProvider>
   </QueryClientProvider>
   );
 };

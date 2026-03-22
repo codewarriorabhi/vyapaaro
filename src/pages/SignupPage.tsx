@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { User, Store, Mail, Phone, MapPin, CheckCircle, Loader2, ArrowLeft, ShieldCheck } from "lucide-react";
+import { saveOAuthRole } from "@/contexts/AuthContext";
 import logo from "@/assets/vyapaaro-logo-new.png";
 
 const signupSchema = z.object({
@@ -388,6 +389,11 @@ const SignupPage = () => {
                 className="w-full h-12 text-base font-medium gap-3"
                 onClick={async () => {
                   try {
+                    // Save role to localStorage before OAuth redirect
+                    // The AuthContext will read this after login and insert into database
+                    saveOAuthRole(userType);
+                    console.log("[SignupPage] Saved OAuth role to localStorage:", userType);
+
                     const { error } = await supabase.auth.signInWithOAuth({
                       provider: "google",
                       options: {

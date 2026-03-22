@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import {
   Store, Plus, Eye, MousePointerClick, MessageSquare,
@@ -26,26 +27,51 @@ interface ShopRow {
 
 const MyShopsPage = () => {
   const navigate = useNavigate();
+  const { user, role, isShopOwner: contextShopOwner, loading: authLoading, fetchRole } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [isShopOwner, setIsShopOwner] = useState(false);
   const [myShops, setMyShops] = useState<ShopRow[]>([]);
   const [shopStats, setShopStats] = useState<Record<string, { views: number; clicks: number; inquiries: number }>>({});
 
   useEffect(() => {
     const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) { navigate("/login"); return; }
+      // Debug: Log auth state
+      console.log("[MyShopsPage] Init - user:", user?.id);
+      console.log("[MyShopsPage] Init - role from context:", role);
+      console.log("[MyShopsPage] Init - isShopOwner from context:", contextShopOwner);
+      console.log("[MyShopsPage] Init - authLoading:", authLoading);
 
-      const { data: roleData } = await supabase
-        .from("user_roles").select("role")
-        .eq("user_id", session.user.id).maybeSingle();
+      // Wait for auth to finish loading
+      if (authLoading) {
+        console.log("[MyShopsPage] Auth still loading, waiting...");
+        return;
+      }
 
-      if (roleData?.role !== "shop_owner") {
-        toast({ title: "Access Denied", description: "Only shop owners can access this page.", variant: "destructive" });
+      // Check if user is logged in
+      if (!user) {
+        console.log("[MyShopsPage] No user session, redirecting to login");
+        navigate("/login");
+        return;
+      }
+
+      // Fetch latest role from database to ensure we have the most recent
+      await fetchRole();
+      console.log("[MyShopsPage] Role after fetchRole:", role);
+
+      // Check if user is a shop owner
+      if (!contextShopOwner) {
+        console.log("[MyShopsPage] User is NOT a shop owner, role:", role);
+        console.log("[MyShopsPage] Access Denied - redirecting to profile");
+        toast({ 
+          title: "Access Denied", 
+          description: `Only shop owners can access this page. Your current role: ${role || 'none'}. Please sign up as a Shop Owner to access this page.`, 
+          variant: "destructive" 
+        });
         navigate("/profile");
         return;
       }
-      setIsShopOwner(true);
+
+      console.log("[MyShopsPage] User is a shop owner, allowing access");
+      setLoading(false);
 
       // Fetch owner's shops
       const { data: shops } = await supabase
@@ -73,7 +99,7 @@ const MyShopsPage = () => {
       setLoading(false);
     };
     init();
-  }, [navigate]);
+  }, [navigate, user, role, contextShopOwner, authLoading, fetchRole]);
 
   const totalViews = Object.values(shopStats).reduce((a, b) => a + b.views, 0);
   const totalClicks = Object.values(shopStats).reduce((a, b) => a + b.clicks, 0);
@@ -94,7 +120,7 @@ const MyShopsPage = () => {
     );
   }
 
-  if (!isShopOwner) return null;
+  if (!contextShopOwner) return null;
 
   return (
     <div className="pb-20 md:pb-8">
