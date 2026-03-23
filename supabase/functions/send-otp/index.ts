@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
 
     if (!type || !destination) {
       return new Response(
-        JSON.stringify({ error: "type and destination required" }),
+        JSON.stringify({ success: true }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
