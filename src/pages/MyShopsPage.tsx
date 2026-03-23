@@ -76,7 +76,7 @@ const MyShopsPage = () => {
       // Fetch owner's shops
       const { data: shops } = await supabase
         .from("shops").select("*")
-        .eq("owner_id", session.user.id)
+        .eq("owner_id", user.id)
         .order("created_at", { ascending: false });
 
       const shopList = (shops || []) as ShopRow[];
