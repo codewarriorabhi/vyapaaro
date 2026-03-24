@@ -43,9 +43,42 @@ Deno.serve(async (req) => {
     );
 
     if (type === "email") {
-      // For email, we'll log OTP (in production, integrate email service)
-      console.log(`[EMAIL OTP] ${destination}: ${otp}`);
-      // TODO: Send actual email via Resend/SendGrid
+      // Send email via Resend API
+      try {
+        const resendApiKey = Deno.env.get("RESEND_API_KEY");
+        if (resendApiKey) {
+          await fetch("https://api.resend.com/emails/queue", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${resendApiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "Vyapaaro <onboarding@resend.dev>",
+              to: destination,
+              subject: "Your Vyapaaro OTP Code",
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h2 style="color: #333;">Your OTP Code</h2>
+                  <p>Your verification code is:</p>
+                  <div style="background: #f4f4f4; padding: 20px; text-align: center; font-size: 32px; letter-spacing: 8px; font-weight: bold; border-radius: 8px;">
+                    ${otp}
+                  </div>
+                  <p style="color: #666; font-size: 14px; margin-top: 20px;">
+                    This code expires in 10 minutes. If you didn't request this code, please ignore this email.
+                  </p>
+                </div>
+              `,
+              text: `Your Vyapaaro OTP code is: ${otp}. This code expires in 10 minutes.`
+            }),
+          });
+        } else {
+          console.log(`[EMAIL OTP - NO RESEND KEY] ${destination}: ${otp}`);
+        }
+      } catch (emailError) {
+        console.error("Failed to send email:", emailError);
+        console.log(`[EMAIL OTP - FALLBACK] ${destination}: ${otp}`);
+      }
     } else if (type === "phone") {
       // Send SMS via Twilio
       const twilioSid = Deno.env.get("TWILIO_ACCOUNT_SID");
