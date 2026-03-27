@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { User, Store, Mail, Phone, MapPin, CheckCircle, Loader2, ArrowLeft, ShieldCheck } from "lucide-react";
+import { Store, Mail, Phone, MapPin, CheckCircle, Loader2, ArrowLeft, ShieldCheck } from "lucide-react";
 import { saveOAuthRole } from "@/contexts/AuthContext";
 import logo from "@/assets/vyapaaro-logo-new.png";
 
@@ -23,7 +23,6 @@ const signupSchema = z.object({
   phone: z.string().trim().min(10, "Enter a valid phone number").max(15).regex(/^\+?[0-9]{10,15}$/, "Invalid phone format"),
   address: z.string().trim().min(5, "Address must be at least 5 characters").max(500),
   password: z.string().min(6, "Password must be at least 6 characters").max(128),
-  userType: z.enum(["customer", "shop_owner"]),
 });
 
 type SignupForm = z.infer<typeof signupSchema>;
@@ -43,36 +42,27 @@ const SignupPage = () => {
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { userType: "customer" },
   });
-
-  const userType = watch("userType");
 
   const onSubmitForm = async (data: SignupForm) => {
     setFormData(data);
 
-    if (data.userType === "customer") {
-      await createAccount(data);
-    } else {
-      // Shop owner → send email OTP first
-      setLoading(true);
-      try {
-        const res = await supabase.functions.invoke("send-otp", {
-          body: { type: "email", destination: data.email },
-        });
-        if (res.error) throw new Error(res.error.message);
-        setStep("email_otp");
-        toast({ title: "OTP Sent", description: "Check your email for the verification code." });
-      } catch (err: any) {
-        toast({ title: "Error", description: err.message || "Failed to send OTP", variant: "destructive" });
-      } finally {
-        setLoading(false);
-      }
+    // Shop owner signup → send email OTP first
+    setLoading(true);
+    try {
+      const res = await supabase.functions.invoke("send-otp", {
+        body: { type: "email", destination: data.email },
+      });
+      if (res.error) throw new Error(res.error.message);
+      setStep("email_otp");
+      toast({ title: "OTP Sent", description: "Check your email for the verification code." });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to send OTP", variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -124,7 +114,7 @@ const SignupPage = () => {
   const createAccount = async (data: SignupForm, emailV = false, phoneV = false) => {
     setLoading(true);
     try {
-      // Create Supabase auth account
+      // Create Supabase auth account with shop_owner role
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -134,7 +124,7 @@ const SignupPage = () => {
             surname: data.surname,
             phone: data.phone,
             address: data.address,
-            role: data.userType,
+            role: "shop_owner",
             email_verified: emailV,
             phone_verified: phoneV,
           },
@@ -282,44 +272,16 @@ const SignupPage = () => {
         <Card className="shadow-card">
           <CardContent className="pt-6 pb-6">
             <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-5">
-              {/* User Type Selector */}
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold">I want to join as</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  {([
-                    { value: "customer" as const, icon: User, label: "Customer", emoji: "👤", desc: "Browse & shop" },
-                    { value: "shop_owner" as const, icon: Store, label: "Shop Owner", emoji: "🏪", desc: "List & sell" },
-                  ]).map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => setValue("userType", opt.value)}
-                      className={`relative p-4 rounded-xl border-2 text-left transition-all ${
-                        userType === opt.value
-                          ? "border-primary bg-primary/5 shadow-sm"
-                          : "border-border hover:border-primary/30 bg-card"
-                      }`}
-                    >
-                      <span className="text-2xl block mb-1">{opt.emoji}</span>
-                      <span className="text-sm font-semibold text-foreground">{opt.label}</span>
-                      <span className="text-xs text-muted-foreground block">{opt.desc}</span>
-                      {userType === opt.value && (
-                        <CheckCircle className="absolute top-2 right-2 h-4 w-4 text-primary" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-                {errors.userType && <p className="text-sm text-destructive">{errors.userType.message}</p>}
-              </div>
-
-              {userType === "shop_owner" && (
-                <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 flex gap-2 items-start">
-                  <ShieldCheck className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+              {/* Shop Owner Info Banner */}
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 flex gap-2 items-start">
+                <Store className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-foreground">Registering as Shop Owner</p>
                   <p className="text-xs text-muted-foreground">
-                    Shop owners require <strong>email & phone verification</strong> before account activation.
+                    You will need to verify your <strong>email & phone</strong> before account activation.
                   </p>
                 </div>
-              )}
+              </div>
 
               {/* Name Fields */}
               <div className="grid grid-cols-2 gap-3">
@@ -371,7 +333,7 @@ const SignupPage = () => {
 
               <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={loading}>
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                {userType === "shop_owner" ? "Continue to Verification" : "Create Account"}
+                Continue to Verification
               </Button>
 
               <div className="relative my-1">
@@ -389,17 +351,18 @@ const SignupPage = () => {
                 className="w-full h-12 text-base font-medium gap-3"
                 onClick={async () => {
                   try {
-                    // Save role to localStorage before OAuth redirect
-                    // The AuthContext will read this after login and insert into database
-                    saveOAuthRole(userType);
-                    console.log("[SignupPage] Saved OAuth role to localStorage:", userType);
+                    // Save "customer" role to localStorage before OAuth redirect
+                    // Google OAuth users default to "customer" role
+                    // They can upgrade to "shop_owner" later by registering a shop
+                    saveOAuthRole("customer");
+                    console.log("[SignupPage] Saved OAuth role to localStorage: customer");
 
                     const { error } = await supabase.auth.signInWithOAuth({
                       provider: "google",
                       options: {
                         redirectTo: window.location.origin,
                         data: {
-                          role: userType,
+                          role: "customer",
                           first_name: "",
                           surname: "",
                         },
@@ -417,7 +380,7 @@ const SignupPage = () => {
                   <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                   <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                 </svg>
-                Continue with Google
+                Sign up with Google (Customer)
               </Button>
 
               <p className="text-center text-sm text-muted-foreground">

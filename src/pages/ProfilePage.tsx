@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { User, Settings, ChevronRight, LogIn, LogOut, Store, Bell, HelpCircle, Shield, Mail, Phone, MapPin, Loader2, Pencil, ShoppingBag } from "lucide-react";
+import { User, Settings, ChevronRight, LogIn, LogOut, Store, Bell, Mail, Phone, MapPin, Loader2, Pencil, ShoppingBag } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import type { User as SupaUser } from "@supabase/supabase-js";
@@ -83,16 +83,12 @@ const ProfilePage = () => {
         { icon: Store, label: "My Shops", desc: "Manage your shop listings", path: "/my-shops" },
         { icon: Bell, label: "Notifications", desc: "Offers & announcements", path: "/settings" },
         { icon: Settings, label: "Settings", desc: "App preferences", path: "/settings" },
-        { icon: HelpCircle, label: "Help & Support", desc: "Get assistance" },
-        { icon: Shield, label: "Privacy Policy", desc: "Your data protection" },
       ]
     : [
         { icon: LogIn, label: "Login / Sign Up", desc: "Access your account", path: "/login" },
         { icon: Store, label: "My Shops", desc: "Manage your shop listings", path: "/login" },
         { icon: Bell, label: "Notifications", desc: "Offers & announcements", path: "/settings" },
         { icon: Settings, label: "Settings", desc: "App preferences", path: "/settings" },
-        { icon: HelpCircle, label: "Help & Support", desc: "Get assistance" },
-        { icon: Shield, label: "Privacy Policy", desc: "Your data protection" },
       ];
 
   if (loading) {
